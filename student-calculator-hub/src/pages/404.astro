@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="This page could not be found. Explore the Student Calculator Hub directory to find a useful free tool."
+  noindex
+>
+  <section class="container not-found">
+    <span aria-hidden="true">404</span>
+    <h1>A little off course.</h1>
+    <p>
+      That page isn’t here, but your next answer might be. Let’s get you back to the right
+      calculator.
+    </p>
+    <a class="button button-primary" href="/calculators">
+      Explore calculators <span aria-hidden="true">↗</span>
+    </a>
+  </section>
+</BaseLayout>

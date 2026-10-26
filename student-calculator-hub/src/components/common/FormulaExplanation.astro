@@ -1,0 +1,16 @@
+---
+interface Props {
+  formula: string;
+  explanation: string;
+}
+const { formula, explanation } = Astro.props;
+---
+
+<section id="formula">
+  <h2>The math, made clear</h2>
+  <div class="formula-explanation">
+    <span>THE FORMULA</span>
+    <p>{formula}</p>
+  </div>
+  <p>{explanation}</p>
+</section>

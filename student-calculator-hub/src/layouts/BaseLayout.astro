@@ -1,0 +1,208 @@
+---
+import '../styles/global.css';
+import '@fontsource-variable/inter/wght.css';
+import { site, isPlaceholderDomain } from '../config/site';
+import Icon from '../components/common/Icon.astro';
+import { cleanPathname, canonicalUrl } from '../lib/seo/urls.mjs';
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+}
+const { title, description, noindex = false, schema = [] } = Astro.props;
+const pathname = cleanPathname(Astro.url.pathname);
+const canonical = canonicalUrl(pathname, site.url);
+const graph = [
+  {
+    '@type': 'WebSite',
+    '@id': `${site.url}/#website`,
+    url: site.url,
+    name: site.name,
+    inLanguage: 'en',
+  },
+  ...schema,
+];
+---
+
+<!doctype html>
+<html
+  lang="en"
+  style={`--configured-primary: ${site.primary}; --configured-secondary: ${site.secondary};`}
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | {site.name}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={site.primary} />
+    <meta
+      name="robots"
+      content={noindex || isPlaceholderDomain ? 'noindex, follow' : 'index, follow'}
+    />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={site.logo} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={`${site.url}/images/social-preview.png`} />
+    <meta property="og:image:alt" content="Student Calculator Hub — Make Every Grade Count" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${site.url}/images/social-preview.png`} />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(
+        /</g,
+        '\u003c',
+      )}
+    />
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('student-hub-theme');
+        document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
+      } catch {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to content
+    </a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="/" class="brand">
+          <span class="brand-mark">
+            <Icon name="graduation" size={25} />
+          </span>
+          <span>
+            Student<span class="brand-light">Calculator Hub</span>
+          </span>
+        </a>
+        <nav class="desktop-nav" aria-label="Main navigation">
+          <a
+            href="/calculators"
+            aria-current={pathname.startsWith('/calculators') ? 'page' : undefined}
+          >
+            Calculators
+          </a>
+          <a href="/#how-it-works">How it works</a>
+          <a href="/about" aria-current={pathname === '/about' ? 'page' : undefined}>
+            About us
+          </a>
+        </nav>
+        <div class="header-actions">
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            data-theme-toggle
+          >
+            <Icon name="sun" size={20} />
+          </button>
+          <a class="button button-primary header-cta" href="/calculators">
+            Find your calculator <span aria-hidden="true">↗</span>
+          </a>
+          <details class="mobile-nav">
+            <summary aria-label="Open navigation menu">
+              <span aria-hidden="true">☰</span>
+            </summary>
+            <nav aria-label="Mobile navigation">
+              <a href="/calculators">All calculators</a>
+              <a href="/#how-it-works">How it works</a>
+              <a href="/about">About us</a>
+              <a href="/contact">Contact</a>
+            </nav>
+          </details>
+        </div>
+      </div>
+    </header>
+    <main id="main-content">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a class="brand" href="/">
+              <span class="brand-mark">
+                <Icon name="graduation" size={25} />
+              </span>
+              <span>
+                Student<span class="brand-light">Calculator Hub</span>
+              </span>
+            </a>
+            <p>
+              A little clarity for your academic journey.
+              <br />
+              Free tools. Thoughtful explanations.
+              <br />
+              More room to focus on what’s next.
+            </p>
+          </div>
+          <div>
+            <h2>Start calculating</h2>
+            <a href="/calculators/gpa-calculator">GPA Calculator</a>
+            <a href="/calculators/final-exam-grade-calculator">Final Exam Grade</a>
+            <a href="/calculators/required-attendance-calculator">Required Attendance</a>
+            <a href="/calculators">Explore all 12 tools</a>
+          </div>
+          <div>
+            <h2>The essentials</h2>
+            <a href="/about">About us</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/terms">Terms of Use</a>
+            <a href="/disclaimer">Educational Disclaimer</a>
+          </div>
+          <div class="footer-note">
+            <span class="footer-badge">
+              <Icon name="shield" size={18} /> Private by design
+            </span>
+            <p>
+              Your grades stay on your device.
+              <br />
+              No account. No uploads.
+            </p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            © {new Date().getFullYear()} {site.name}. Made for the way you learn.
+          </p>
+          <p>Educational estimates. Always check your institution’s policies.</p>
+        </div>
+      </div>
+    </footer>
+    <script>
+      const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+      function update() {
+        buttons.forEach((button) =>
+          button.setAttribute(
+            'aria-label',
+            document.documentElement.dataset.theme === 'dark'
+              ? 'Switch to light mode'
+              : 'Switch to dark mode',
+          ),
+        );
+      }
+      update();
+      buttons.forEach((button) =>
+        button.addEventListener('click', () => {
+          const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+          document.documentElement.dataset.theme = theme;
+          try {
+            localStorage.setItem('student-hub-theme', theme);
+          } catch {
+            /* Theme works without persistence. */
+          }
+          update();
+        }),
+      );
+    </script>
+  </body>
+</html>

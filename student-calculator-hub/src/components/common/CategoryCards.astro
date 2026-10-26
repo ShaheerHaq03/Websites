@@ -1,0 +1,26 @@
+---
+import { calculators } from '../../data/calculators';
+import Icon from './Icon.astro';
+const groups = [
+  { name: 'GPA & credits', icon: 'graduation', text: 'See your semester in perspective.' },
+  { name: 'Grades & exams', icon: 'target', text: 'Make a plan for the marks ahead.' },
+  { name: 'Attendance', icon: 'calendar', text: 'Keep your class goals in sight.' },
+  { name: 'Study planning', icon: 'clock', text: 'Make time for what matters.' },
+];
+---
+
+<div class="category-cards" aria-label="Calculator categories">
+  {groups.map((group) => (
+    <a href={`/calculators?category=${encodeURIComponent(group.name)}`}>
+      <Icon name={group.icon} size={20} />
+      <div>
+        <h3>{group.name}</h3>
+        <p>{group.text}</p>
+        <span>
+          {calculators.filter((c) => c.category === group.name).length}{' '}
+          {group.name === 'Study planning' ? 'tool' : 'tools'} <span aria-hidden="true">↗</span>
+        </span>
+      </div>
+    </a>
+  ))}
+</div>

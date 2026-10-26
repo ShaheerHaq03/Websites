@@ -1,0 +1,92 @@
+---
+import { calculators, categories } from '../../data/calculators';
+import ToolCard from './ToolCard.astro';
+import Icon from './Icon.astro';
+---
+
+<div class="tool-directory" data-directory>
+  <div class="directory-toolbar">
+    <label class="search-field">
+      <Icon name="search" size={20} />
+      <span class="sr-only">Search calculators</span>
+      <input
+        type="search"
+        aria-label="Search calculators"
+        placeholder="Search GPA, grades, attendance…"
+        data-tool-search
+        autocomplete="off"
+      />
+      <kbd aria-hidden="true">12 tools</kbd>
+    </label>
+    <div class="category-filters" role="group" aria-label="Filter by category">
+      {categories.map((c, i) => (
+        <button
+          type="button"
+          class:list={['filter-button', { active: i === 0 }]}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+          data-filter={c}
+        >
+          {c}
+        </button>
+      ))}
+    </div>
+  </div>
+  <p class="directory-count" role="status" data-tool-count>
+    Showing all 12 calculators
+  </p>
+  <div class="tools-grid">
+    {calculators.map((c) => (
+      <ToolCard calculator={c} />
+    ))}
+  </div>
+  <p class="no-results" data-no-results hidden>
+    No calculators found. Try “GPA”, “exam”, or “attendance”.
+  </p>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-directory]').forEach((root) => {
+    const search = root.querySelector<HTMLInputElement>('[data-tool-search]');
+    const cards = [...root.querySelectorAll<HTMLElement>('.tool-card')];
+    const initial = new URLSearchParams(location.search).get('category');
+    let category = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')].some(
+      (b) => b.dataset.filter === initial,
+    )
+      ? initial!
+      : 'All tools';
+    root.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) => {
+      b.classList.toggle('active', b.dataset.filter === category);
+      b.setAttribute('aria-pressed', String(b.dataset.filter === category));
+    });
+    const filter = () => {
+      let count = 0;
+      const query = search?.value.trim().toLowerCase() || '';
+      cards.forEach((card) => {
+        const visible =
+          (category === 'All tools' || card.dataset.category === category) &&
+          (card.dataset.search || '').includes(query);
+        card.hidden = !visible;
+        if (visible) count++;
+      });
+      const status = root.querySelector('[data-tool-count]');
+      if (status)
+        status.textContent =
+          count === 12
+            ? 'Showing all 12 calculators'
+            : `${count} calculator${count === 1 ? '' : 's'} found`;
+      const empty = root.querySelector<HTMLElement>('[data-no-results]');
+      if (empty) empty.hidden = count !== 0;
+    };
+    filter();
+    search?.addEventListener('input', filter);
+    root.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((button) =>
+      button.addEventListener('click', () => {
+        category = button.dataset.filter || 'All tools';
+        root.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) => {
+          b.classList.toggle('active', b === button);
+          b.setAttribute('aria-pressed', String(b === button));
+        });
+        filter();
+      }),
+    );
+  });
+</script>

@@ -1,0 +1,29 @@
+---
+import Icon from './Icon.astro';
+import type { CalculatorInfo } from '../../data/calculators';
+interface Props {
+  calculator: CalculatorInfo;
+  featured?: boolean;
+}
+const { calculator: c, featured = false } = Astro.props;
+---
+
+<a
+  class:list={['tool-card', `color-${c.color}`, { 'featured-card': featured }]}
+  href={`/calculators/${c.slug}`}
+  data-category={c.category}
+  data-search={`${c.title} ${c.description} ${c.keywords.join(' ')}`.toLowerCase()}
+>
+  <div class="card-top">
+    <span class="tool-icon">
+      <Icon name={c.icon} />
+    </span>
+    {featured && <span class="popular-tag">Popular</span>}
+    <span class="card-arrow" aria-hidden="true">
+      ↗
+    </span>
+  </div>
+  <h3>{c.shortTitle}</h3>
+  <p>{c.description}</p>
+  <span class="card-category">{c.category}</span>
+</a>

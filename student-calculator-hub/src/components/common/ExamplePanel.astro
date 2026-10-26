@@ -1,0 +1,12 @@
+---
+interface Props {
+  example: string;
+}
+const { example } = Astro.props;
+---
+
+<section class="example-panel" id="example">
+  <span class="eyebrow">LET’S MAKE IT REAL</span>
+  <h2>A worked example</h2>
+  <p>{example}</p>
+</section>

@@ -1,0 +1,8 @@
+node_modules
+dist
+.astro
+pnpm-lock.yaml
+PROJECT-BRIEF.md
+playwright-report
+test-results
+docs/reports

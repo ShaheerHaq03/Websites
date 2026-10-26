@@ -1,0 +1,22 @@
+---
+import { site } from '../../config/site';
+interface Props {
+  label?: string;
+}
+const { label = 'Advertisement' } = Astro.props;
+const configured =
+  site.ads.enabled && /^ca-pub-\d{16}$/.test(site.ads.publisher) && /^\d+$/.test(site.ads.slot);
+---
+
+{configured && (
+  <div
+    class="ad-slot"
+    data-ad-slot
+    data-ad-client={site.ads.publisher}
+    data-ad-id={site.ads.slot}
+    aria-label={label}
+    hidden
+  ></div>
+)}
+<!-- No script or ad request is emitted. A real certified CMP adapter must activate
+     eligible slots after its consent/eligibility decision. See docs/ADS-AND-PRIVACY.md. -->

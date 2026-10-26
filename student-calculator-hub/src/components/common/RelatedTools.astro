@@ -1,0 +1,22 @@
+---
+import { tool, type CalculatorId } from '../../data/calculators';
+import ToolCard from './ToolCard.astro';
+interface Props {
+  related: CalculatorId[];
+}
+const { related } = Astro.props;
+---
+
+<section class="related-tools">
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow">KEEP THE CLARITY GOING</span>
+      <h2>You might also find these useful.</h2>
+    </div>
+  </div>
+  <div class="tools-grid" data-related>
+    {related.map((id) => (
+      <ToolCard calculator={tool(id)} />
+    ))}
+  </div>
+</section>

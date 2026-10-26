@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { information } from '../data/information';
+import { site } from '../config/site';
+export function getStaticPaths() {
+  return Object.entries(information).map(([page, content]) => ({
+    params: { page },
+    props: { content, page },
+  }));
+}
+interface Props {
+  content: (typeof information)[string];
+  page: string;
+}
+const { content, page } = Astro.props;
+---
+
+<BaseLayout
+  title={page === 'about' ? 'About Us' : page === 'contact' ? 'Contact' : content.title}
+  description={content.description}
+>
+  <article class="container info-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">
+        {page === 'about' ? 'About' : page === 'contact' ? 'Contact' : content.title}
+      </span>
+    </nav>
+    <span class="eyebrow">STUDENT CALCULATOR HUB</span>
+    <h1>{content.title}</h1>
+    <p class="page-lead">{content.intro}</p>
+    <div class="info-content">
+      {content.sections.map((section) => (
+        <section>
+          <h2>{section.title}</h2>
+          {section.paragraphs.map((p) => (
+            <p>{p}</p>
+          ))}
+          {section.list && (
+            <ul>
+              {section.list.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))}
+      {page === 'contact' && site.contactEmail && (
+        <a class="button button-primary" href={`mailto:${site.contactEmail}`}>
+          Email the operator
+        </a>
+      )}
+      {page === 'privacy-policy' && (
+        <section>
+          <h2>Reset your local preference</h2>
+          <button class="button button-outline" id="clear-theme" type="button">
+            Clear theme preference
+          </button>
+          <p id="clear-status" role="status"></p>
+        </section>
+      )}
+      <section>
+        <h2>Find your next answer</h2>
+        <p>
+          Browse <a href="/calculators">all twelve calculators</a>, learn{' '}
+          <a href="/about">about our approach</a>, or read the{' '}
+          <a href="/disclaimer">educational disclaimer</a>.
+        </p>
+      </section>
+    </div>
+  </article>
+  <script>
+    document.querySelector('#clear-theme')?.addEventListener('click', () => {
+      try {
+        localStorage.removeItem('student-hub-theme');
+      } catch {
+        /* No saved preference to clear. */
+      }
+      document.documentElement.dataset.theme = 'light';
+      document
+        .querySelector('[data-theme-toggle]')
+        ?.setAttribute('aria-label', 'Switch to dark mode');
+      const status = document.querySelector('#clear-status');
+      if (status) status.textContent = 'Theme preference cleared. Light mode restored.';
+    });
+  </script>
+</BaseLayout>

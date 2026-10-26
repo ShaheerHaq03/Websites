@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolDirectory from '../../components/common/ToolDirectory.astro';
+---
+
+<BaseLayout
+  title="All 12 Student Calculators"
+  description="Explore free calculators for GPA, CGPA, weighted grades, exams, attendance, and study planning. Search by task and find the right tool."
+>
+  <section class="container directory-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Calculators</span>
+    </nav>
+    <span class="eyebrow">ONE TOOLKIT. TWELVE POSSIBILITIES.</span>
+    <h1>Find your next answer.</h1>
+    <p class="page-lead">
+      GPA goals, exam what-ifs, or a little help planning your week.
+      <br />
+      There’s a calculator for that.
+    </p>
+    <ToolDirectory />
+  </section>
+</BaseLayout>
