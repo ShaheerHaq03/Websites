@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="That page could not be found. Find a free developer tool for JSON, CSV, JWT, Base64, regex, or time in the tool directory."
+  noindex
+>
+  <section class="not-found">
+    <code aria-hidden="true">404</code>
+    <div class="eyebrow">AN UNEXPECTED RESPONSE.</div>
+    <h1>This page didn’t make the build.</h1>
+    <p>The address may have changed. Your next useful tool is still here.</p>
+    <a href="/tools" class="btn btn-primary">
+      Find your tool →
+    </a>
+  </section>
+</BaseLayout>

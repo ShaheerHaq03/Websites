@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolDirectory from '../../components/ui/ToolDirectory.astro';
+import { pages } from '../../data/pages';
+import { tools } from '../../data/tools';
+import { itemList, ref } from '../../lib/seo/schema';
+const list = itemList(
+  '/tools',
+  'All developer tools',
+  tools.map((tool) => ({
+    name: tool.name,
+    path: `/tools/${tool.id}`,
+    description: tool.description,
+  })),
+);
+---
+
+<BaseLayout
+  title={pages.tools.seoTitle}
+  description={pages.tools.metaDescription}
+  pageType={pages.tools.pageType}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: pages.tools.name, path: pages.tools.path },
+  ]}
+  webPageExtra={{ mainEntity: ref(list['@id'] as string) }}
+  schema={[list]}
+>
+  <div class="container directory-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">All tools</span>
+    </nav>
+    <div class="page-intro">
+      <div class="eyebrow">YOUR BROWSER. YOUR WORKSPACE.</div>
+      <h1>A tool for the everyday.</h1>
+      <p>
+        12 focused utilities to help you format, convert, inspect, and get on
+        with your day.
+      </p>
+    </div>
+    <h2 class="sr-only">Browse developer tools by category</h2>
+    <ToolDirectory />
+  </div>
+</BaseLayout>

@@ -13,19 +13,23 @@ interface Props {
   page: string;
 }
 const { content, page } = Astro.props;
+const crumb = page === 'about' ? 'About' : page === 'contact' ? 'Contact' : content.title;
 ---
 
 <BaseLayout
   title={page === 'about' ? 'About Us' : page === 'contact' ? 'Contact' : content.title}
   description={content.description}
+  pageType={page === 'about' ? 'AboutPage' : page === 'contact' ? 'ContactPage' : 'WebPage'}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: crumb, path: `/${page}` },
+  ]}
 >
   <article class="container info-page">
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span aria-hidden="true">/</span>
-      <span aria-current="page">
-        {page === 'about' ? 'About' : page === 'contact' ? 'Contact' : content.title}
-      </span>
+      <span aria-current="page">{crumb}</span>
     </nav>
     <span class="eyebrow">STUDENT CALCULATOR HUB</span>
     <h1>{content.title}</h1>

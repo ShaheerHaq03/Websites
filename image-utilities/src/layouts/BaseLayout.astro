@@ -1,0 +1,132 @@
+---
+import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import '../styles/global.css';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import { site, canonical } from '../config/site';
+import {
+  organization,
+  website,
+  webPage,
+  ids,
+  serializeGraph,
+  type PageType,
+  type SchemaNode,
+} from '../lib/seo/schema';
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+  /** Page-specific JSON-LD nodes, merged into the shared @graph. */
+  schema?: SchemaNode[];
+  pageType?: PageType;
+  /** Name used for the WebPage node; defaults to the title. */
+  pageName?: string;
+  /** Root-relative path of the Markdown twin, e.g. /tools/image-resizer.md. */
+  markdownPath?: string;
+  ogType?: 'website' | 'article';
+}
+const {
+  title,
+  description,
+  noindex = false,
+  schema = [],
+  pageType = 'WebPage',
+  pageName = title,
+  markdownPath,
+  ogType = 'website',
+} = Astro.props;
+const path = Astro.url.pathname;
+const pageUrl = canonical(path);
+const socialImage = canonical(site.socialImage.path);
+const graph = noindex
+  ? undefined
+  : serializeGraph([
+      organization(),
+      website(),
+      webPage({
+        path,
+        type: pageType,
+        name: pageName,
+        description,
+        hasBreadcrumb: schema.some(
+          (node) => node['@id'] === ids.breadcrumb(path),
+        ),
+      }),
+      ...schema,
+    ]);
+---
+
+<!doctype html>
+<html lang="en" data-theme="light" data-theme-key={site.theme.storageKey}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={interFont}
+      crossorigin
+    />
+    <title>{title} | PixelTools</title>
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={noindex ? 'noindex, follow' : 'index, follow'}
+    />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={pageUrl} />
+    {markdownPath && (
+      <link
+        rel="alternate"
+        type="text/markdown"
+        href={new URL(markdownPath, site.url).href}
+      />
+    )}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    {ogType === 'article' && (
+      <meta property="article:modified_time" content={site.updated} />
+    )}
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(site.socialImage.width)} />
+    <meta
+      property="og:image:height"
+      content={String(site.socialImage.height)}
+    />
+    <meta property="og:image:alt" content={site.socialImage.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content={site.socialImage.alt} />
+    <script is:inline>
+      try {
+        const r = document.documentElement,
+          t = localStorage.getItem(r.dataset.themeKey);
+        r.dataset.theme = t === 'dark' ? 'dark' : 'light';
+      } catch {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+    {graph && <script type="application/ld+json" set:html={graph} />}
+  </head>
+  <body id="top">
+    <a href="#main" class="skip-link">
+      Skip to content
+    </a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

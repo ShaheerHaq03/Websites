@@ -1,0 +1,83 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { pages } from '../data/pages';
+---
+
+<DocumentLayout
+  title="Privacy Policy"
+  description="A clear picture of local processing, ordinary website requests, and your choices."
+  eyebrow="UPDATED OCTOBER 27, 2026"
+  metaTitle={pages.privacy.metaTitle}
+  metaDescription={pages.privacy.metaDescription}
+>
+  <h2>Your images stay local</h2>
+  <p>
+    Core image decoding, resizing, compression, conversion, cropping, metadata
+    inspection, and ZIP creation happen in your browser. The application does
+    not send selected image bytes, filenames, EXIF/GPS information, or generated
+    output to an application server or conversion API. These values are not
+    attached to analytics, placed in page URLs, or logged in production.
+  </p>
+  <p>
+    File selection and drag-and-drop read files into the current tab. Local
+    previews use temporary browser object URLs. Copy controls write explicitly
+    selected metadata to your clipboard, and downloads create files on your
+    device. Clearing the workspace releases application references and preview
+    URLs; browser internals, extensions, clipboard history, and downloaded files
+    operate outside that boundary.
+  </p>
+  <h2>Ordinary website requests</h2>
+  <p>
+    Visiting a website makes requests for HTML, scripts, styles, fonts, and
+    sample artwork. The optional “Try a sample” control fetches an image bundled
+    with this site, not an image from your device. Hosting providers may process
+    connection details such as IP address, requested path, headers, and access
+    timestamps for delivery, security, and operations.
+  </p>
+  <h2>Local preferences</h2>
+  <p>
+    The selected light/dark theme is stored in this browser’s local storage
+    under a site preference key. Images, EXIF values, and output are not saved
+    in a persistent application history. You can remove the preference through
+    browser site-data settings. Your browser may separately retain form or
+    download history.
+  </p>
+  <h2>Metadata and location</h2>
+  <p>
+    Metadata inspection is local. GPS fields are revealed only on request and
+    are never turned into map links or shareable URLs. Select metadata
+    deliberately before copying or saving it. Re-encoding an image without its
+    original EXIF/GPS blocks does not guarantee anonymity: visible image
+    content, filenames, and encoder-generated information may still be
+    identifying.
+  </p>
+  <h2>Analytics and advertising</h2>
+  <p>
+    The default site has analytics and advertising disabled. It makes no
+    requests to tracking or ad providers. If the operator later enables optional
+    services, this policy must identify the actual providers, data, purposes,
+    retention, and choices. Third-party scripts may receive ordinary browsing
+    information even though core image operations remain local.
+  </p>
+  <p>
+    Applicable consent requirements must be addressed before enabling ads. A
+    generic cookie banner does not by itself establish compliance. Selected
+    images, filenames, clipboard data, output, and metadata must never be
+    included in analytics events or ad requests.
+  </p>
+  <h2>Links and contact</h2>
+  <p>
+    External documentation links are governed by their destinations’ policies.
+    The local feedback form does not submit a message to this site. With a
+    configured contact address it opens a draft in your email application;
+    otherwise it saves a text draft on your device.
+  </p>
+  <h2>Your choices</h2>
+  <p>
+    Use a trusted device and browser, prefer non-sensitive examples, clear the
+    workspace after use, and manage downloaded output and clipboard history. See
+    the <a href="/contact">contact page</a> for privacy questions. Operator
+    details and jurisdiction-specific rights should be reviewed before public
+    launch.
+  </p>
+</DocumentLayout>

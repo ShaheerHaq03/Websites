@@ -1,11 +1,21 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolDirectory from '../../components/common/ToolDirectory.astro';
+import { site } from '../../config/site';
+import { calculatorItemList } from '../../lib/seo/schema';
+const itemListId = `${site.url}/calculators#itemlist`;
 ---
 
 <BaseLayout
   title="All 12 Student Calculators"
   description="Explore free calculators for GPA, CGPA, weighted grades, exams, attendance, and study planning. Search by task and find the right tool."
+  pageType="CollectionPage"
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'Calculators', path: '/calculators' },
+  ]}
+  mainEntity={itemListId}
+  schema={[calculatorItemList(itemListId)]}
 >
   <section class="container directory-page">
     <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -20,6 +30,7 @@ import ToolDirectory from '../../components/common/ToolDirectory.astro';
       <br />
       There’s a calculator for that.
     </p>
+    <h2 class="sr-only">Browse all 12 calculators</h2>
     <ToolDirectory />
   </section>
 </BaseLayout>

@@ -1,0 +1,24 @@
+---
+import { site } from '../../config/site';
+interface Props {
+  slot?: string;
+}
+const { slot = '' } = Astro.props;
+const enabled =
+  site.adsense.enabled &&
+  /^ca-pub-\d{16}$/.test(site.adsense.publisherId) &&
+  /^\d+$/.test(slot);
+---
+
+{enabled && (
+  <aside
+    class="ad-space"
+    aria-label="Advertisement"
+    data-ad-slot={slot}
+    data-ad-publisher={site.adsense.publisherId}
+  >
+    <span>Advertisement</span>
+    <div data-ad-container></div>
+  </aside>
+)}
+<!-- No third-party ad request is made here. See docs/advertising.md for the CMP adapter and activation gate. -->

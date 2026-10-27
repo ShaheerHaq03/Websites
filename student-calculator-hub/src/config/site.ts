@@ -1,7 +1,11 @@
+import { SITE_UPDATED } from './updated.mjs';
 export const site = {
   name: 'Student Calculator Hub',
   shortName: 'Student Hub',
   tagline: 'A little clarity. A lot of possibility.',
+  description:
+    'Free student calculators for GPA, CGPA, weighted grades, final exam targets, attendance, and study planning, with clear formulas and worked examples. Calculations run in your browser.',
+  updated: SITE_UPDATED,
   url: (import.meta.env.PUBLIC_SITE_URL || 'https://example.com').replace(/\/$/, ''),
   logo: '/favicon.svg',
   primary: '#4F46E5',

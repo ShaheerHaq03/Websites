@@ -5,11 +5,17 @@ import ToolCard from '../components/common/ToolCard.astro';
 import ToolDirectory from '../components/common/ToolDirectory.astro';
 import CategoryCards from '../components/common/CategoryCards.astro';
 import { tool } from '../data/calculators';
+import { site } from '../config/site';
+import { calculatorItemList } from '../lib/seo/schema';
+const itemListId = `${site.url}/#calculators`;
 ---
 
 <BaseLayout
-  title="Free GPA, Grade & Attendance Calculators"
+  title="GPA, Grade & Attendance Calculators"
   description="Make every grade count with 12 free student calculators. Work out GPA, final exam scores, attendance, and study plans with clear formulas and examples."
+  pageType="CollectionPage"
+  mainEntity={itemListId}
+  schema={[calculatorItemList(itemListId)]}
 >
   <section class="hero">
     <div class="container hero-grid">

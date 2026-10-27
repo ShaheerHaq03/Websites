@@ -1,0 +1,84 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { site, displayDate } from '../config/site';
+import {
+  breadcrumbList,
+  type Crumb,
+  type PageType,
+  type SchemaNode,
+} from '../lib/seo/schema';
+interface Props {
+  title: string;
+  description: string;
+  eyebrow?: string;
+  /** Title-tag text when it should differ from the visible H1. */
+  metaTitle?: string;
+  /** Meta description when it should differ from the visible intro. */
+  metaDescription?: string;
+  /** Breadcrumb trail between Home and the current page. */
+  parents?: Crumb[];
+  pageType?: PageType;
+  schema?: SchemaNode[];
+  markdownPath?: string;
+  ogType?: 'website' | 'article';
+  /** Show a visible "Last updated" line driven by site.updated. */
+  showUpdated?: boolean;
+}
+const {
+  title,
+  description,
+  eyebrow = 'PIXELTOOLS',
+  metaTitle = title,
+  metaDescription = description,
+  parents = [],
+  pageType,
+  schema = [],
+  markdownPath,
+  ogType,
+  showUpdated = false,
+} = Astro.props;
+const path = Astro.url.pathname;
+const crumbs: Crumb[] = [
+  { name: 'Home', path: '/' },
+  ...parents,
+  { name: title, path },
+];
+---
+
+<BaseLayout
+  title={metaTitle}
+  description={metaDescription}
+  pageName={title}
+  pageType={pageType}
+  schema={[...schema, breadcrumbList(path, crumbs)]}
+  markdownPath={markdownPath}
+  ogType={ogType}
+>
+  <article class="document-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      {parents.map((crumb) => (
+        <>
+          <span aria-hidden="true">/</span>
+          <a href={crumb.path}>{crumb.name}</a>
+        </>
+      ))}
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{title}</span>
+    </nav>
+    <div class="page-intro">
+      <span class="eyebrow">{eyebrow}</span>
+      <h1>{title}</h1>
+      <p>{description}</p>
+      {showUpdated && (
+        <p class="updated-note">
+          Last updated{' '}
+          <time datetime={site.updated}>{displayDate(site.updated)}</time>
+        </p>
+      )}
+    </div>
+    <div class="document-content">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

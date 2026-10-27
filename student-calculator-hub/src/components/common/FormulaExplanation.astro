@@ -2,12 +2,14 @@
 interface Props {
   formula: string;
   explanation: string;
+  /** Section heading, ideally phrased as the question a student would search. */
+  heading?: string;
 }
-const { formula, explanation } = Astro.props;
+const { formula, explanation, heading = 'The math, made clear' } = Astro.props;
 ---
 
 <section id="formula">
-  <h2>The math, made clear</h2>
+  <h2>{heading}</h2>
   <div class="formula-explanation">
     <span>THE FORMULA</span>
     <p>{formula}</p>

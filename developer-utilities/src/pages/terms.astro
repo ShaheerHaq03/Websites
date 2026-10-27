@@ -1,0 +1,58 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { pages } from '../data/pages';
+---
+
+<DocumentLayout page={pages.terms}>
+  <h2>Using the tools</h2>
+  <p>
+    Data Formatter Pro provides developer utilities for general information and
+    development assistance. You are responsible for the data you process and for
+    checking that the result is appropriate for your application. Do not use the
+    site to violate applicable law, another person’s rights, or the security of
+    systems you are not authorized to access.
+  </p>
+  <h2>Your data and output</h2>
+  <p>
+    You retain your rights in your input and output. Local processing does not
+    grant the website a license to your payloads. Only process information that
+    you are authorized to handle, using a browser and device you trust. These
+    tools are not a substitute for a controlled production data-processing
+    environment.
+  </p>
+  <h2>Accuracy and availability</h2>
+  <p>
+    The tools have documented limits and may contain errors. Verify critical
+    results independently before using them in production, security, financial,
+    or other consequential decisions. Availability and compatibility can change,
+    and no continuous-service commitment is offered.
+  </p>
+  <h2>Specific technical limitations</h2>
+  <p>
+    JWT decoding does not authenticate a signature. JavaScript numeric precision
+    can affect JSON numbers. CSV conversions can lose type information. Cron
+    behavior must be checked against your scheduler. Regex execution is bounded
+    but patterns may still be inefficient. See each utility’s guide for its
+    detailed behavior.
+  </p>
+  <h2>Third-party references</h2>
+  <p>
+    Documentation links are provided for context. Their content, availability,
+    and privacy practices are controlled by the relevant third parties. Their
+    inclusion does not imply endorsement or affiliation.
+  </p>
+  <h2>Responsibility and updates</h2>
+  <p>
+    To the extent allowed by applicable law, the utilities are provided as
+    available without warranties of fitness for a particular purpose. Nothing in
+    these terms excludes rights or liabilities that cannot lawfully be excluded.
+    The operator may revise these terms; the displayed update date identifies
+    the version. Contact details and any jurisdiction-specific terms should be
+    confirmed before public launch.
+  </p>
+  <p>
+    See the <a href="/privacy-policy">Privacy Policy</a>,{' '}
+    <a href="/disclaimer">Disclaimer</a>, and{' '}
+    <a href="/contact">contact information</a>.
+  </p>
+</DocumentLayout>

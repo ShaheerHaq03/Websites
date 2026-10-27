@@ -1,0 +1,48 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { pages } from '../data/pages';
+---
+
+<DocumentLayout page={pages.disclaimer}>
+  <h2>A development aid, with defined limits</h2>
+  <p>
+    These utilities assist with routine development tasks. They do not provide
+    professional legal advice, a security audit, authentication decisions, or a
+    guarantee that transformed data matches a particular business schema.
+  </p>
+  <h2>Decoding is not verification</h2>
+  <p>
+    The JWT decoder displays encoded claims without checking the signature,
+    issuer, audience, or a server’s acceptance policy. A readable token or an
+    unexpired timestamp does not establish trust. Base64 and percent encoding
+    are reversible encodings, not encryption.
+  </p>
+  <h2>Check transformations before relying on them</h2>
+  <p>
+    JavaScript parses JSON numbers using binary floating-point precision.
+    Duplicate object keys retain their final value with a warning. CSV cannot
+    represent every JSON distinction. Regex syntax and time calculations follow
+    the browser’s supported JavaScript APIs. Cron previews follow the explicitly
+    documented parser and timezone behavior rather than every scheduler’s rules.
+  </p>
+  <h2>Local processing is not perfect security</h2>
+  <p>
+    Processing in the browser avoids uploading input as part of the core tool
+    operation. It cannot protect against compromised devices, malicious
+    extensions, browser history features, screenshots, or clipboard access by
+    other software. Prefer sanitized, nonproduction examples and follow your
+    organization’s data-handling rules.
+  </p>
+  <h2>No affiliation or approval claim</h2>
+  <p>
+    This website is an independent utility. References to protocols, products,
+    and hosting services describe compatibility or provide documentation.
+    Advertising preparation does not mean Google has approved the site, and
+    performance targets are not measured scores unless a report explicitly
+    states a measurement.
+  </p>
+  <p>
+    Read the <a href="/terms">Terms of Use</a> and each tool’s guide for further
+    limitations.
+  </p>
+</DocumentLayout>

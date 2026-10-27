@@ -1,0 +1,20 @@
+---
+import { site } from '../../config/site';
+const { slot = '' } = Astro.props;
+const enabled =
+  site.adsense.enabled &&
+  /^ca-pub-\d{16}$/.test(site.adsense.publisherId) &&
+  /^\d+$/.test(slot);
+---
+
+{enabled && (
+  <aside
+    class="ad-slot"
+    aria-label="Advertisement"
+    data-ad-publisher={site.adsense.publisherId}
+    data-ad-slot={slot}
+  >
+    <span>Advertisement</span>
+    <div data-ad-container></div>
+  </aside>
+)}

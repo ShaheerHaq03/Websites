@@ -178,7 +178,7 @@ export const information: Record<
   disclaimer: {
     title: 'Educational Disclaimer',
     description:
-      'Understand the limits of GPA, grade, attendance, and study planning estimates before using them for academic decisions.',
+      'Understand the limits of GPA, grade, attendance, and study planning estimates before you use them for important academic decisions.',
     intro:
       'These calculators explain mathematical models. They do not replace your institution’s policies, official gradebook, attendance record, or advice from an authorized academic adviser.',
     sections: [

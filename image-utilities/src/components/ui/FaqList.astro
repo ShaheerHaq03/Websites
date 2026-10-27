@@ -1,0 +1,15 @@
+---
+interface Props {
+  items: readonly (readonly [string, string])[];
+}
+const { items } = Astro.props;
+---
+
+<div class="faq-list">
+  {items.map(([question, answer]) => (
+    <div class="faq-item">
+      <h3>{question}</h3>
+      <p>{answer}</p>
+    </div>
+  ))}
+</div>

@@ -1,0 +1,87 @@
+---
+import DocumentLayout from '../../layouts/DocumentLayout.astro';
+import { guides } from '../../content/guides';
+import { getTool } from '../../data/tools';
+import { canonical, site } from '../../config/site';
+import { ids, ref } from '../../lib/seo/schema';
+export function getStaticPaths() {
+  return guides.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+const { guide } = Astro.props;
+const path = `/guides/${guide.slug}`;
+const schema = [
+  {
+    '@type': 'Article',
+    '@id': `${canonical(path)}#article`,
+    headline: guide.title,
+    alternativeHeadline: guide.metaTitle,
+    description: guide.metaDescription,
+    // No separate publish date is recorded for these guides, so both dates
+    // use the single site review date.
+    datePublished: site.updated,
+    dateModified: site.updated,
+    author: ref(ids.organization()),
+    publisher: ref(ids.organization()),
+    mainEntityOfPage: ref(ids.webpage(path)),
+    image: {
+      '@type': 'ImageObject',
+      url: canonical(site.socialImage.path),
+      width: site.socialImage.width,
+      height: site.socialImage.height,
+    },
+    inLanguage: 'en',
+    timeRequired: `PT${guide.readTime}M`,
+  },
+];
+---
+
+<DocumentLayout
+  title={guide.title}
+  description={guide.description}
+  eyebrow={`${guide.readTime} MIN READ · IMAGE GUIDE`}
+  metaTitle={guide.metaTitle}
+  metaDescription={guide.metaDescription}
+  parents={[{ name: 'Guides', path: '/guides' }]}
+  schema={schema}
+  markdownPath={`${path}.md`}
+  ogType="article"
+  showUpdated
+>
+  {guide.sections.map(([heading, text]) => (
+    <section>
+      <h2>{heading}</h2>
+      <p>{text}</p>
+    </section>
+  ))}
+  <h2>Put it into practice</h2>
+  <div class="button-row">
+    {guide.related.map((id) => (
+      <a class="btn" href={`/tools/${id}`}>
+        {getTool(id).name} ↗
+      </a>
+    ))}
+  </div>
+  <p class="guide-source-note">
+    Technical references:{' '}
+    <a
+      href="https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      MDN image formats
+    </a>{' '}
+    and{' '}
+    <a
+      href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Canvas API
+    </a>
+    . Processing details describe this implementation; destination requirements
+    should be checked separately.
+  </p>
+</DocumentLayout>

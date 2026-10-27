@@ -8,19 +8,90 @@ interface Props {
   title: string;
   description: string;
   noindex?: boolean;
+  /** Extra page-specific JSON-LD nodes, merged into the single @graph. */
   schema?: Record<string, unknown>[];
+  /** schema.org type for the page node: WebPage, CollectionPage, AboutPage, ContactPage. */
+  pageType?: 'WebPage' | 'CollectionPage' | 'AboutPage' | 'ContactPage';
+  /** Visible breadcrumb trail; emitted as a BreadcrumbList linked from the page node. */
+  breadcrumbs?: { name: string; path: string }[];
+  /** @id of the node this page is mainly about (e.g. an ItemList). */
+  mainEntity?: string;
+  /** Root-relative path of this page's Markdown twin, advertised as rel="alternate". */
+  markdownPath?: string;
 }
-const { title, description, noindex = false, schema = [] } = Astro.props;
+const {
+  title,
+  description,
+  noindex = false,
+  schema = [],
+  pageType = 'WebPage',
+  breadcrumbs,
+  mainEntity,
+  markdownPath,
+} = Astro.props;
 const pathname = cleanPathname(Astro.url.pathname);
 const canonical = canonicalUrl(pathname, site.url);
+const organizationId = `${site.url}/#organization`;
+const websiteId = `${site.url}/#website`;
+const breadcrumbId = `${canonical}#breadcrumb`;
+const socialImage = {
+  url: `${site.url}/images/social-preview.png`,
+  width: 1200,
+  height: 630,
+  alt: 'Student Calculator Hub — Make Every Grade Count',
+};
 const graph = [
   {
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: site.name,
+    url: site.url,
+    description: site.description,
+    logo: {
+      '@type': 'ImageObject',
+      '@id': `${site.url}/#logo`,
+      url: `${site.url}${site.logo}`,
+      contentUrl: `${site.url}${site.logo}`,
+      width: 64,
+      height: 64,
+      caption: site.name,
+    },
+  },
+  {
     '@type': 'WebSite',
-    '@id': `${site.url}/#website`,
+    '@id': websiteId,
     url: site.url,
     name: site.name,
+    description: site.description,
     inLanguage: 'en',
+    publisher: { '@id': organizationId },
   },
+  {
+    '@type': pageType,
+    '@id': `${canonical}#webpage`,
+    url: canonical,
+    name: title,
+    description,
+    isPartOf: { '@id': websiteId },
+    inLanguage: 'en',
+    dateModified: site.updated,
+    ...(breadcrumbs?.length ? { breadcrumb: { '@id': breadcrumbId } } : {}),
+    ...(mainEntity ? { mainEntity: { '@id': mainEntity } } : {}),
+  },
+  ...(breadcrumbs?.length
+    ? [
+        {
+          '@type': 'BreadcrumbList',
+          '@id': breadcrumbId,
+          itemListElement: breadcrumbs.map((crumb, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: crumb.name,
+            item: canonicalUrl(crumb.path, site.url),
+          })),
+        },
+      ]
+    : []),
   ...schema,
 ];
 ---
@@ -41,18 +112,31 @@ const graph = [
       content={noindex || isPlaceholderDomain ? 'noindex, follow' : 'index, follow'}
     />
     <link rel="canonical" href={canonical} />
+    {markdownPath && (
+      <link
+        rel="alternate"
+        type="text/markdown"
+        href={new URL(markdownPath, site.url).href}
+        title={`${title} (Markdown)`}
+      />
+    )}
     <link rel="icon" type="image/svg+xml" href={site.logo} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.name} />
-    <meta property="og:image" content={`${site.url}/images/social-preview.png`} />
-    <meta property="og:image:alt" content="Student Calculator Hub — Make Every Grade Count" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={socialImage.url} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(socialImage.width)} />
+    <meta property="og:image:height" content={String(socialImage.height)} />
+    <meta property="og:image:alt" content={socialImage.alt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${site.url}/images/social-preview.png`} />
+    <meta name="twitter:image" content={socialImage.url} />
+    <meta name="twitter:image:alt" content={socialImage.alt} />
     <script
       type="application/ld+json"
       set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(

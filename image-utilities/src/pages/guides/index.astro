@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { guides } from '../../content/guides';
+import { itemList } from '../../lib/seo/schema';
+const schema = [
+  itemList(
+    '/guides',
+    'PixelTools image guides',
+    guides.map((guide) => ({
+      name: guide.title,
+      path: `/guides/${guide.slug}`,
+    })),
+  ),
+];
+---
+
+<BaseLayout
+  title="Image Guides — Pixels, Formats & Privacy"
+  description="Practical image guides on pixel dimensions vs file size, JPG vs PNG vs WebP, resizing without distortion, and the EXIF and GPS data photos can carry."
+  pageType="CollectionPage"
+  pageName="Practical image guides"
+  schema={schema}
+>
+  <div class="container guides-page">
+    <div class="page-intro">
+      <span class="eyebrow">GET TO KNOW YOUR PIXELS.</span>
+      <h1>A little more clarity.</h1>
+      <p>Practical image guides for better choices and fewer surprises.</p>
+    </div>
+    <div class="guide-list">
+      {guides.map((g) => (
+        <a href={`/guides/${g.slug}`}>
+          <span>{g.readTime} MIN READ</span>
+          <h2>{g.title}</h2>
+          <p>{g.description}</p>
+          <b>Read the guide →</b>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

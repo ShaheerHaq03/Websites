@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA Issues &amp; Fixes</title>
+<style>
+:root {
+  --bg: #f7f7f5; --surface: #ffffff; --text: #1d1d1f; --muted: #66676b; --border: #e2e2de;
+  --accent: #3b5bdb; --code-bg: #f0f0ec;
+  --crit-bg: #fde8e8; --crit: #b42318; --high-bg: #fff1e0; --high: #b54708;
+  --med-bg: #fef9e1; --med: #8a6a00; --low-bg: #e9f2fb; --low: #2b5a8a; --fix-bg: #eef7ef; --fix: #1e6b34;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141416; --surface: #1d1d20; --text: #ececee; --muted: #a0a1a6; --border: #303035;
+    --accent: #8ea6ff; --code-bg: #2a2a2f;
+    --crit-bg: #3a1c1c; --crit: #ff9b93; --high-bg: #3a2814; --high: #ffbe7a;
+    --med-bg: #353014; --med: #f0d36a; --low-bg: #182a3c; --low: #9cc7f0; --fix-bg: #16301e; --fix: #8fd6a2;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 920px; margin: 0 auto; padding: 32px 16px 80px; }
+h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 6px; }
+h2 { font-size: 1.3rem; margin: 40px 0 14px; }
+h3 { font-size: 1.05rem; margin: 0; flex: 1 1 260px; }
+.lede { color: var(--muted); margin: 0 0 24px; }
+.muted { color: var(--muted); }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: .88em; overflow-wrap: anywhere; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+td.num { text-align: center; font-variant-numeric: tabular-nums; }
+thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+tr.total th, tr.total td { border-bottom: 0; }
+.table-wrap { overflow-x: auto; }
+.badge { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.sev-critical { background: var(--crit-bg); color: var(--crit); }
+.sev-high { background: var(--high-bg); color: var(--high); }
+.sev-medium { background: var(--med-bg); color: var(--med); }
+.sev-low { background: var(--low-bg); color: var(--low); }
+.legend, .checklist, .plain { list-style: none; padding: 0; margin: 0; }
+.legend li, .checklist li { padding: 4px 0; }
+.checklist label { cursor: pointer; }
+.id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85rem; color: var(--muted); }
+.filters { position: sticky; top: 0; z-index: 1; background: var(--bg); padding: 10px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border-bottom: 1px solid var(--border); }
+.filters span { font-size: .8rem; color: var(--muted); margin-right: 2px; }
+.filters .sep { width: 12px; }
+.filters button { font: inherit; font-size: .85rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.issue { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; }
+.issue header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin-bottom: 10px; }
+.origin { font-size: .78rem; color: var(--muted); border: 1px solid var(--border); padding: 1px 8px; border-radius: 999px; }
+dl { margin: 0; display: grid; grid-template-columns: 120px 1fr; gap: 8px 14px; }
+dt { font-weight: 600; font-size: .88rem; color: var(--muted); }
+dd { margin: 0; }
+dd.fix { background: var(--fix-bg); border-radius: 8px; padding: 8px 12px; }
+dt.fix { color: var(--fix); }
+.files { list-style: none; margin: 0; padding: 0; font-size: .9rem; }
+.files li + li { margin-top: 2px; }
+.hidden { display: none; }
+.issue { scroll-margin-top: 110px; }
+@media (max-width: 600px) {
+  dl { grid-template-columns: 1fr; gap: 2px; }
+  dd { margin-bottom: 8px; }
+  h1 { font-size: 1.5rem; }
+  .filters { position: static; }
+  th, td { padding: 8px 4px; }
+  thead th { font-size: .62rem; letter-spacing: 0; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>QA Issues &amp; Fixes</h1>
+  <p class="lede">All three websites · QA date October 27, 2026 · <strong>None of these are fixed yet.</strong></p>
+
+  <section class="panel">
+    <h2 style="margin-top:0">Summary</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Site</th><th class="num">Critical</th><th class="num">High</th><th class="num">Medium</th><th class="num">Low</th><th class="num">Total</th></tr></thead>
+      <tbody><tr><th scope="row">All three sites</th><td class="num">2</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num"><strong>2</strong></td></tr><tr><th scope="row">Student Calculator Hub</th><td class="num">–</td><td class="num">1</td><td class="num">1</td><td class="num">8</td><td class="num"><strong>10</strong></td></tr><tr><th scope="row">Data Formatter Pro</th><td class="num">–</td><td class="num">1</td><td class="num">1</td><td class="num">10</td><td class="num"><strong>12</strong></td></tr><tr><th scope="row">PixelTools</th><td class="num">–</td><td class="num">1</td><td class="num">4</td><td class="num">6</td><td class="num"><strong>11</strong></td></tr><tr class="total"><th scope="row">Total</th><td class="num"><strong>2</strong></td><td class="num"><strong>3</strong></td><td class="num"><strong>6</strong></td><td class="num"><strong>24</strong></td><td class="num"><strong>35</strong></td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel">
+    <h2 style="margin-top:0">Severity levels</h2>
+    <ul class="legend"><li><span class="badge sev-critical">Critical</span> Blocks launch. Fix before going live.</li><li><span class="badge sev-high">High</span> A feature is broken or the page says something untrue.</li><li><span class="badge sev-medium">Medium</span> Clearly noticeable to visitors; looks broken or confusing.</li><li><span class="badge sev-low">Low</span> Polish. Small wording, layout, or convenience issues.</li></ul>
+    <p class="muted" style="margin:10px 0 0">“Existing” means the problem was already there before the SEO work; “SEO update” means it came from the new SEO/AEO content.</p>
+  </section>
+
+  <section class="panel">
+    <h2 style="margin-top:0">Fix first (launch checklist)</h2>
+    <ul class="checklist"><li><label><input type="checkbox"> <span class="id">ALL-1</span> Real website address is not set <span class="muted">· All three sites</span></label></li><li><label><input type="checkbox"> <span class="id">ALL-2</span> Legal and contact pages still read as an unfinished draft <span class="muted">· All three sites</span></label></li><li><label><input type="checkbox"> <span class="id">CALC-1</span> Numbered steps show no numbers and bullet lists show no bullets <span class="muted">· Student Calculator Hub</span></label></li><li><label><input type="checkbox"> <span class="id">DEV-1</span> Cron Builder loses your schedule when you edit one field <span class="muted">· Data Formatter Pro (developer-utilities)</span></label></li><li><label><input type="checkbox"> <span class="id">IMG-1</span> Metadata Viewer cannot read WebP files, so it misses GPS location <span class="muted">· PixelTools (image-utilities)</span></label></li></ul>
+  </section>
+
+  <section class="panel">
+    <h2 style="margin-top:0">What I need from you</h2>
+    <ul><li>The real domain for each site (for <code>PUBLIC_SITE_URL</code>).</li><li>A contact email for each site (for <code>PUBLIC_CONTACT_EMAIL</code>).</li><li>The owner/operator name and the country whose law applies (calculator hub: <code>PUBLIC_OWNER_NAME</code>, <code>PUBLIC_JURISDICTION</code>; also used in the legal text of the other two).</li></ul>
+  </section>
+
+  <h2>All issues</h2>
+  <div class="filters" role="toolbar" aria-label="Filter issues">
+    <span>Site</span><button type="button" data-filter-site="any" aria-pressed="true">All</button><button type="button" data-filter-site="all">All three sites</button><button type="button" data-filter-site="calc">Student Calculator Hub</button><button type="button" data-filter-site="dev">Data Formatter Pro</button><button type="button" data-filter-site="img">PixelTools</button>
+    <span class="sep"></span>
+    <span>Severity</span><button type="button" data-filter-sev="any" aria-pressed="true">All</button><button type="button" data-filter-sev="Critical">Critical</button><button type="button" data-filter-sev="High">High</button><button type="button" data-filter-sev="Medium">Medium</button><button type="button" data-filter-sev="Low">Low</button>
+  </div>
+  <p id="count" class="muted" aria-live="polite"></p>
+  <h2 class="site-heading" data-site-heading="all">All three sites</h2>
+<article class="issue" data-site="all" data-sev="Critical">
+  <header>
+    <span class="badge sev-critical">Critical</span>
+    <span class="id">ALL-1</span>
+    <h3>Real website address is not set</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Each site still uses the placeholder address <code>https://example.com</code>. On the calculator hub this deliberately tells Google not to index the site (SEO score drops to 66). On the other two, every canonical link, sitemap entry and share link points to example.com instead of your domain.</dd>
+    <dt>How to see it</dt><dd>Open any page's source and look at <code>&lt;link rel="canonical"&gt;</code> or open <code>/robots.txt</code>.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">In each Cloudflare Pages project, set the environment variable <code>PUBLIC_SITE_URL</code> to the real address (for example <code>https://yourdomain.com</code>, no trailing slash) for both Production and Preview, then rebuild and redeploy. Do not upload the current <code>dist</code> folders: they were built with test addresses.</dd>
+    <dt>Where</dt><dd><ul class="files"><li>Cloudflare Pages → Settings → Environment variables</li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="all" data-sev="Critical">
+  <header>
+    <span class="badge sev-critical">Critical</span>
+    <span class="id">ALL-2</span>
+    <h3>Legal and contact pages still read as an unfinished draft</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Privacy, Terms, Contact, About and Disclaimer pages contain text like “not yet configured”, “this preview”, “draft terms” and “should be reviewed before public launch”. Visitors have no way to contact you. Ad networks such as AdSense usually reject sites in this state.</dd>
+    <dt>How to see it</dt><dd>Open <code>/privacy-policy</code>, <code>/terms</code> or <code>/contact</code> on any of the three sites.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">1) Set <code>PUBLIC_CONTACT_EMAIL</code> on all three sites, and also <code>PUBLIC_OWNER_NAME</code> and <code>PUBLIC_JURISDICTION</code> on the calculator hub. 2) Rewrite the hard-coded “preview / draft / before launch” sentences into final wording; setting the variables alone will not remove them. 3) Have the final legal text checked by someone qualified. The developer-utilities and image-utilities <code>pnpm deploy</code> commands already refuse to deploy until the contact email is set.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/data/information.ts (lines 40, 44, 63, 86, 91, 136, 172, 207)</code></li><li><code>developer-utilities/src/pages/contact.astro:19, privacy-policy.astro:67, terms.astro:51</code></li><li><code>image-utilities/src/pages/contact.astro:26, terms.astro:53, privacy-policy.astro</code></li></ul></dd>
+  </dl>
+</article><h2 class="site-heading" data-site-heading="calc">Student Calculator Hub</h2>
+<article class="issue" data-site="calc" data-sev="High">
+  <header>
+    <span class="badge sev-high">High</span>
+    <span class="id">CALC-1</span>
+    <h3>Numbered steps show no numbers and bullet lists show no bullets</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>On all 12 calculator pages, the “How do I use…?” steps and the “What mistakes should I avoid?” list appear as plain indented lines. The page's CSS reset removes list markers and nothing adds them back.</dd>
+    <dt>How to see it</dt><dd>Open <code>/calculators/gpa-calculator</code> and scroll to “How do I use the GPA Calculator?”.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Add <code>list-style: decimal;</code> to <code>.calculator-content ol</code> and <code>list-style: disc;</code> to <code>.calculator-content ul</code>. The existing <code>li::marker</code> colour rule will then style them.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/styles/global.css:1678</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Medium">
+  <header>
+    <span class="badge sev-medium">Medium</span>
+    <span class="id">CALC-2</span>
+    <h3>“What is the …?” answer repeats the paragraph right under it</h3>
+    <span class="origin">SEO update</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>The new short answer at the top of each calculator guide says almost the same thing as the older intro paragraph directly below it (for example both GPA paragraphs say the 4.0 scale is customizable). It reads as repetition.</dd>
+    <dt>How to see it</dt><dd>Open any calculator page and read the first two paragraphs under “What is the …?”.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Rewrite each calculator's <code>intro</code> so it adds something new (who it is for, when to use it, what makes it different) instead of restating the answer. The Markdown copies update automatically.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/data/calculators.ts (the `intro` field of all 12 calculators)</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-3</span>
+    <h3>Calculator search only finds exact phrases</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Searching “final exam calculator”, “study plan” or “what grade do i need” shows “0 calculators found”, even though matching calculators exist. The search looks for the whole phrase as one piece of text.</dd>
+    <dt>How to see it</dt><dd>On <code>/calculators</code>, type <code>final exam calculator</code> in the search box.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Split the search into words and show a calculator when every word appears in its search text. Optionally add common phrasings (such as “what grade do I need”) to each calculator's search keywords.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/components/common/ToolDirectory.astro (the filter script, around line 48)</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-4</span>
+    <h3>Study Hours Planner shows a misleading error</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>If you pick a plan start date after a subject's deadline, the error says the deadline “must be today or later”. The real rule is “on or after the plan start date”.</dd>
+    <dt>How to see it</dt><dd>Study Hours Planner → set Plan start date to 2026-11-20 → Build plan.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Change the message to “Subject N deadline must be on or after the plan start date.”</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/lib/calculations/index.ts:277</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-5</span>
+    <h3>Exam Score Converter can show “Infinity” or 7.49e+24</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Extremely large target totals produce results like “Infinity” or scientific notation, because there is no upper limit and the result is not checked before display.</dd>
+    <dt>How to see it</dt><dd>Exam Score Converter → Between mark scales → 36 out of 48, target total <code>1e307</code>.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Add a sensible maximum (for example 1,000,000) to the total fields, and have <code>format()</code> reject non-finite results with a friendly message.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/lib/calculations/index.ts:23 (format) and the converter&#x27;s input validation</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-6</span>
+    <h3>Some error messages name the wrong field or read oddly</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Attendance (missed-classes mode): entering 2.5 missed classes says “Classes attended must be a whole number”. Negative values say “must be between 0 and a finite positive value”. Huge GPA credits say “Total credits must be a number”.</dd>
+    <dt>How to see it</dt><dd>Attendance Percentage → switch to missed-classes mode → enter 2.5 missed.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Pass the correct field label in missed-classes mode; change the open-ended range message to “must be 0 or more”; add a realistic maximum for credits.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/lib/calculations/index.ts (line 6 and the attendance function)</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-7</span>
+    <h3>Escape key does not close the mobile menu</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>On phones the menu closes when you tap outside, but not when you press Escape (keyboard and assistive-tech users expect it to).</dd>
+    <dt>How to see it</dt><dd>Narrow the browser, open the ☰ menu, press Escape.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Add a small keydown listener that closes the <code>&lt;details class="mobile-nav"&gt;</code> on Escape and returns focus to its summary.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/layouts/BaseLayout.astro</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-8</span>
+    <h3>CGPA Calculator can create two rows with the same name</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>After removing “Semester 1” and adding a semester, the new row is named “Semester 3” again, so two rows share a name.</dd>
+    <dt>How to see it</dt><dd>CGPA Calculator → remove Semester 1 → Add semester.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Name new rows with the next unused number instead of <code>rows.length + 1</code>.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/components/calculators/Calculator.tsx:311</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-9</span>
+    <h3>CGPA result says “4 maximum scale” instead of “4.0”</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>The GPA calculator says “4.0” while CGPA says “on your 4 maximum scale”, which looks inconsistent.</dd>
+    <dt>How to see it</dt><dd>CGPA Calculator → Calculate.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Format the scale maximum with one decimal place, the same way the GPA calculator does.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/components/calculators/Calculator.tsx (CGPA result text)</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="calc" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">CALC-10</span>
+    <h3>Invalid fields are not marked for screen readers</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Errors appear in an announced alert box, but the specific input is not flagged as invalid.</dd>
+    <dt>How to see it</dt><dd>Enter a negative credit value and calculate; inspect the input.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Set <code>aria-invalid="true"</code> and <code>aria-describedby</code> (pointing at the error) on the field that caused the error.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>student-calculator-hub/src/components/ui/CalculatorUI.tsx</code></li></ul></dd>
+  </dl>
+</article><h2 class="site-heading" data-site-heading="dev">Data Formatter Pro (developer-utilities)</h2>
+<article class="issue" data-site="dev" data-sev="High">
+  <header>
+    <span class="badge sev-high">High</span>
+    <span class="id">DEV-1</span>
+    <h3>Cron Builder loses your schedule when you edit one field</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Clearing one of the five field boxes blanks all of them, and typing a new value then resets the other fields to <code>*</code>. Example: editing the hour of <code>0 9 * * 1-5</code> to 17 produces <code>* 17 * * *</code>, which runs every minute between 17:00 and 17:59, every day, instead of <code>0 17 * * 1-5</code>. A user could copy a badly wrong schedule into production.</dd>
+    <dt>How to see it</dt><dd>Cron Expression Builder → Load sample → clear the Hour box → type 17 → look at the expression.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Keep the five field boxes in their own state (an array of five strings). Editing a box changes only that position; a blank box stays blank and shows a validation message instead of collapsing the expression. Re-split into the five boxes only when the user edits the full-expression text box.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/tools/TimeTools.tsx:41-46 (`fields` and `changeField`)</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Medium">
+  <header>
+    <span class="badge sev-medium">Medium</span>
+    <span class="id">DEV-2</span>
+    <h3>Search popup is stuck in the top-left corner</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>The “Find a developer tool” search popup opens against the top-left edge of the screen instead of centred. Tailwind's CSS reset removes the browser's built-in centring for popups.</dd>
+    <dt>How to see it</dt><dd>Click the search box in the header (or press Ctrl/⌘ K).</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Add <code>margin: auto;</code> (or <code>margin: 10vh auto auto;</code> to sit near the top) to the <code>dialog { }</code> rule.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/styles/global.css:1093</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-3</span>
+    <h3>CSV to JSON FAQ overstates how Windows line breaks are kept</h3>
+    <span class="origin">SEO update</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>The FAQ says line breaks inside quoted cells “survive the conversion unchanged”, but Windows line breaks (CRLF) inside a quoted cell come out as plain <code>\n</code>. The editor normalises them on load.</dd>
+    <dt>How to see it</dt><dd>Open a CSV containing <code>Ada,"1 Main St&lt;CRLF&gt;London"</code> → Convert.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Simplest: reword the FAQ to say embedded line breaks are kept and normalised to <code>\n</code>. Alternatively configure the editor to keep CRLF.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/content/tools/index.ts:194</code></li><li><code>developer-utilities/src/components/editors/CodeEditor.tsx:53</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-4</span>
+    <h3>JSON Formatter allows 151 nesting levels, page says 150</h3>
+    <span class="origin">SEO update</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>151 levels are accepted and 152 rejected, while the page text says the limit is 150 (off by one).</dd>
+    <dt>How to see it</dt><dd>Format a JSON document nested 151 arrays deep.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Change <code>depth &gt; 150</code> to <code>depth &gt;= 150</code> so the code matches the documented limit.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/lib/json.ts:34</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-5</span>
+    <h3>Search popup needs Escape twice when it has text</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>The first Escape only clears the search text (normal browser behaviour for search boxes); the second closes the popup. The footer hint says “esc to close”.</dd>
+    <dt>How to see it</dt><dd>Open search, type something, press Escape.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Listen for Escape on the search input and close the popup directly.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/layout/Header.astro</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-6</span>
+    <h3>Grammar in counts: “1 UUIDs”, “1 matches”, “1 tools”</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Counters always use the plural form, so they read “1 UUIDs generated locally”, “1 registered status codes”, “1 matches”, “1 tools available”.</dd>
+    <dt>How to see it</dt><dd>UUID Generator → set count to 1 → Generate.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Add a tiny <code>plural(count, 'UUID')</code> helper and use it in each counter.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/tools/UuidTool.tsx:104</code></li><li><code>StatusTool.tsx:69</code></li><li><code>src/lib/regex.ts:55</code></li><li><code>src/components/ui/ToolDirectory.astro:75</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-7</span>
+    <h3>Copy buttons keep saying “Copied!” forever</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>After copying once, the button label stays “Copied!” even after you generate new output, so you can't tell whether the new output was copied.</dd>
+    <dt>How to see it</dt><dd>UUID Generator → Copy all → Generate again.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Reset the label after about 2 seconds, and whenever the text being copied changes.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/tools/shared.tsx:103-111 (CopyButton)</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-8</span>
+    <h3>Old results stay visible after changing options</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Changing indentation, delimiter, the Base64URL checkbox or URL mode leaves the previous result showing until you run again. On the UUID tool an invalid count shows an error but the old list stays.</dd>
+    <dt>How to see it</dt><dd>JSON Formatter → Format → change indentation from 2 to 4 spaces.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Either clear the output when an option changes, or re-run automatically. Clear the UUID list when showing an error.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/tools/DataTools.tsx</code></li><li><code>EncodingTools.tsx</code></li><li><code>UuidTool.tsx</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-9</span>
+    <h3>Regex “Common patterns” dropdown shows the wrong choice</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>After “Load sample”, the dropdown still shows the pattern you picked earlier, not the one that is loaded.</dd>
+    <dt>How to see it</dt><dd>Regex Tester → choose “Capture numbers” → Load sample.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Make the select a controlled input (<code>value</code> instead of <code>defaultValue</code>) and reset it when the sample loads.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/tools/RegexTool.tsx:77</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-10</span>
+    <h3>Keyboard focus lands on an invisible element</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>The hidden file input is its own Tab stop right after the “Open file” button, so keyboard users land on something they can't see. Some filter groups have a label but no role.</dd>
+    <dt>How to see it</dt><dd>Tab through a tool page past the “Open file” button.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Give the hidden input <code>tabIndex={-1}</code> (the visible button already opens it). Add <code>role="group"</code> to the labelled filter containers.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/tools/shared.tsx</code></li><li><code>StatusTool.tsx</code></li><li><code>src/components/ui/ToolDirectory.astro</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-11</span>
+    <h3>Copy icon looks like an empty checkbox; “All tools ⌄” isn't a dropdown</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Copy buttons use the <code>▢</code> character, which reads as an unchecked checkbox. The header link “All tools ⌄” shows a dropdown arrow but is a plain link.</dd>
+    <dt>How to see it</dt><dd>Any tool's Copy button; the header.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Use a proper copy icon (the site's existing Icon set or an inline SVG). Remove the ⌄ from the header link.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/components/tools/shared.tsx:110</code></li><li><code>src/components/layout/Header.astro</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="dev" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">DEV-12</span>
+    <h3>Stray carriage-return characters in one Markdown copy</h3>
+    <span class="origin">SEO update</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd><code>/tools/json-to-csv.md</code> contains two raw carriage-return characters from the example output. Harmless to visitors, slightly untidy for AI readers.</dd>
+    <dt>How to see it</dt><dd>Download <code>/tools/json-to-csv.md</code> and view it in a hex viewer.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Strip <code>\r</code> when generating the Markdown copies.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>developer-utilities/src/lib/seo/markdown.ts</code></li></ul></dd>
+  </dl>
+</article><h2 class="site-heading" data-site-heading="img">PixelTools (image-utilities)</h2>
+<article class="issue" data-site="img" data-sev="High">
+  <header>
+    <span class="badge sev-high">High</span>
+    <span class="id">IMG-1</span>
+    <h3>Metadata Viewer cannot read WebP files, so it misses GPS location</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>For a WebP photo that contains camera details and GPS location, the viewer says “No readable EXIF metadata was found”. The library it uses (exifr) does not support WebP. The page, meta description and llms.txt all promise WebP support, so a user checking a photo before sharing gets a false “no location”. The notice also appears as a raw table row named <code>metadataNotice</code>.</dd>
+    <dt>How to see it</dt><dd>Image Metadata Viewer → choose a WebP photo with GPS → Inspect metadata.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">For WebP files, find the <code>EXIF</code> chunk inside the RIFF container, drop its optional <code>Exif\0\0</code> prefix, and pass the remaining bytes to <code>exifr.parse</code> (it reads raw TIFF/EXIF data). Show the “no metadata” notice as a message, not as a table row. Until this ships, remove “WebP” from the viewer's claims.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/lib/metadata.ts:5-17</code></li><li><code>image-utilities/src/components/tools/MetadataPanel.tsx:97</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Medium">
+  <header>
+    <span class="badge sev-medium">Medium</span>
+    <span class="id">IMG-2</span>
+    <h3>Search popup is stuck in the top-left corner</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>Same problem as DEV-2: the “Find your image tool” popup opens against the top-left edge instead of centred, on desktop and mobile.</dd>
+    <dt>How to see it</dt><dd>Click the search box in the header (or press Ctrl/⌘ K).</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Add <code>margin: auto;</code> (or <code>margin: 10vh auto auto;</code>) to the <code>dialog { }</code> rule.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/styles/global.css:1171</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Medium">
+  <header>
+    <span class="badge sev-medium">Medium</span>
+    <span class="id">IMG-3</span>
+    <h3>Error messages appear off-screen, and the status says “finished” on failure</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>On phones the error appears about a full screen below the button, so tapping Resize appears to do nothing. The status line also says “Processing finished. Review the actual results below.” even when processing failed.</dd>
+    <dt>How to see it</dt><dd>Phone-size screen → Image Resizer → load a photo → width 9000 → Resize image.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Only show “Processing finished” on success; show “Processing failed. See the message below.” otherwise. Move the error box next to the action button, or scroll it into view and move focus to it.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/components/tools/ToolApp.tsx:361 (message) and :1160 (error box)</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Medium">
+  <header>
+    <span class="badge sev-medium">Medium</span>
+    <span class="id">IMG-4</span>
+    <h3>Damaged or half-downloaded JPEGs silently become blank images</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>A truncated JPEG is accepted (“1 image ready · 800 × 600”) and produces a fully transparent image marked “Target reached”, with no warning.</dd>
+    <dt>How to see it</dt><dd>Use the first 600 bytes of a JPEG in the Image Compressor.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">In validation, check that the file is complete: a JPEG should contain the end marker <code>FF D9</code>, a PNG should contain an <code>IEND</code> chunk, and a WebP's RIFF size should match the file length. Otherwise show “This file looks incomplete or damaged.”</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/lib/validation.ts:110 (validateImage)</code></li><li><code>image-utilities/src/lib/engine.ts</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Medium">
+  <header>
+    <span class="badge sev-medium">Medium</span>
+    <span class="id">IMG-5</span>
+    <h3>Aspect Ratio Converter can show “1200 × Infinity pixels”</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>With a custom ratio width of 0, the preview reads “1200 × Infinity pixels”; an empty ratio height shows “× 0 pixels”. The ratio boxes also show a “px” unit, but ratio parts are not pixels.</dd>
+    <dt>How to see it</dt><dd>Aspect Ratio Converter → Custom → set Ratio width to 0.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Check both ratio parts are greater than 0 before calculating and show “Ratio parts must be greater than 0” beside the fields. Add an optional <code>unit</code> setting to <code>NumberField</code> and hide “px” for ratio fields.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/components/tools/ToolApp.tsx:400-406, 779-810</code></li><li><code>image-utilities/src/components/tools/controls.tsx:58</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">IMG-6</span>
+    <h3>Home page headings lose a space on phones</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>On narrow screens “The right format makes a difference.” shows as “The right formatmakes a difference.”, and “A few things to know.” as “A few thingsto know.” The hidden line break had no space next to it.</dd>
+    <dt>How to see it</dt><dd>Home page at phone width; scroll to those two sections.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Put a space before each <code>&lt;br /&gt;</code> (for example <code>format{' '}&lt;br /&gt;</code>).</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/pages/index.astro:130, 284</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">IMG-7</span>
+    <h3>Empty search suggests JSON tools; “1 tools” grammar</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>When a search finds nothing, it suggests “Try “JSON”, “encoding”, or “time””, text copied from the developer site that matches no image tool. Counters read “1 tools available” / “1 matching tools”.</dd>
+    <dt>How to see it</dt><dd>On <code>/tools</code>, search for <code>zzz</code>.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Change the suggestion to image terms such as “resize”, “compress” or “WebP”. Use singular/plural correctly in the counters.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/components/ui/ToolDirectory.astro:50, 75</code></li><li><code>image-utilities/src/components/layout/Header.astro:227</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">IMG-8</span>
+    <h3>The FAQ says WebP at 100% is never lossless, but Chrome and Firefox make it lossless</h3>
+    <span class="origin">SEO update</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>At quality 100, Chrome and Firefox produce lossless WebP (much larger files); Safari stays lossy. The FAQ, the tool's limitations text and the JPG-vs-PNG-vs-WebP guide all say 100% is still lossy.</dd>
+    <dt>How to see it</dt><dd>Image to WebP → quality 100 in Chrome → compare file size with quality 99.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Reword to: “At 100%, Chrome and Firefox may switch to lossless WebP, which makes much larger files; Safari stays lossy. Use 90–99% for smaller files.” (Or cap quality at 99% so output is always lossy.)</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/content/tools.ts:235, 238-239</code></li><li><code>image-utilities/src/content/guides.ts:55</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">IMG-9</span>
+    <h3>Metadata Viewer leftovers and layout glitch</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>After inspecting, the side panel still says “Select Inspect metadata to begin” and “Ready when you are”. On phones the “Dimensions” label breaks as “Dimension / s”. “Copy selected” with nothing ticked copies <code>{}</code>.</dd>
+    <dt>How to see it</dt><dd>Metadata Viewer → Inspect any image → look at the side panel.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Hide the placeholder text once results exist; let the label wrap only between words (or shorten it); disable “Copy selected” when nothing is ticked.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/components/tools/MetadataPanel.tsx</code></li><li><code>image-utilities/src/styles/global.css</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">IMG-10</span>
+    <h3>Batch errors don't say which file is the problem</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>One bad file in a batch rejects the whole batch with a generic message that doesn't name the file, and “Checking image 2 of 3” stays on screen next to the error.</dd>
+    <dt>How to see it</dt><dd>Image Compressor → select two good images and a text file renamed <code>.jpg</code>.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Include the file name in the error (“photo3.jpg is not a supported image”) and clear the progress text when an error appears.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/components/tools/ToolApp.tsx</code></li></ul></dd>
+  </dl>
+</article>
+<article class="issue" data-site="img" data-sev="Low">
+  <header>
+    <span class="badge sev-low">Low</span>
+    <span class="id">IMG-11</span>
+    <h3>Smaller usability items</h3>
+    <span class="origin">Existing</span>
+  </header>
+  <dl>
+    <dt>Problem</dt><dd>“Reset workspace” doesn't turn “Maintain original aspect ratio” back on. Guides are not in the header menu. Escape doesn't close the mobile menu. After choosing a file, keyboard focus is lost. The resizer text calls the percentage box a “slider” but it is a number box.</dd>
+    <dt>How to see it</dt><dd>Image Resizer → untick aspect ratio → Reset workspace.</dd>
+    <dt class="fix">Fix</dt><dd class="fix">Re-enable the aspect lock on reset; add “Guides” to the desktop and mobile menus; close the mobile menu on Escape; move focus to the selected-file summary after a file is chosen; change “slider” to “field”.</dd>
+    <dt>Where</dt><dd><ul class="files"><li><code>image-utilities/src/components/tools/ToolApp.tsx</code></li><li><code>image-utilities/src/components/layout/Header.astro</code></li><li><code>image-utilities/src/content/tools.ts</code></li></ul></dd>
+  </dl>
+</article>
+
+  <h2>Not bugs, but worth knowing</h2>
+  <ul><li><strong>Cron day rules</strong> <span class="muted">(Data Formatter Pro (developer-utilities))</span>: With both a day-of-month step and a weekday (e.g. <code>0 0 */2 * 1</code>) the preview uses “either day” (OR) logic, which some crontab versions treat differently. The page already tells users to verify against their scheduler; consider mentioning this case.</li><li><strong>Cron description of <code>0-7</code></strong> <span class="muted">(Data Formatter Pro (developer-utilities))</span>: The description library reads <code>0 0 * * 0-7</code> as “Sunday through Sunday”. Technically correct, slightly odd.</li><li><strong>CSV formula protection</strong> <span class="muted">(Data Formatter Pro (developer-utilities))</span>: With “Protect spreadsheet formulas” on (default), negative numbers like <code>-5</code> are written as <code>'-5</code>. This is documented, but may surprise people exporting numbers.</li><li><strong>Breadcrumb names in structured data</strong> <span class="muted">(PixelTools (image-utilities))</span>: Guide and About pages use their marketing headline (e.g. “Small tools. A bigger picture.”) as the breadcrumb name. Valid, but the short page name would read better in search results.</li><li><strong>Markdown header rule</strong> <span class="muted">(Student Calculator Hub)</span>: The calculator hub uses one wildcard <code>/*.md</code> rule in <code>_headers</code>; the other two list each file. After deploying, run <code>curl -I https://yourdomain/calculators/gpa-calculator.md</code> and confirm <code>text/markdown</code> and <code>X-Robots-Tag: noindex</code>.</li><li><strong>Old local test servers</strong> <span class="muted">(All three sites)</span>: Two local test servers started before this session (ports 4322 and 4331) still serve old security headers. Restart them before local testing.</li></ul>
+
+  <h2>What passed</h2>
+  <div class="panel table-wrap"><table><tbody><tr><th scope="row">All pages</th><td>60 pages × 5 browser/device setups (Chrome, Firefox, Safari engine, iPhone 13, Pixel 7): no console errors, no failed requests, no security-policy (CSP) blocks, no sideways scrolling at 320–1440 px, real 404 page.</td></tr><tr><th scope="row">Calculator Hub</th><td>All 12 calculators gave correct answers against independent hand calculations, including edge cases (zero, negative, impossible targets, custom scales).</td></tr><tr><th scope="row">Data Formatter Pro</th><td>All 12 tools checked against reference implementations: JSON, CSV, JWT, Base64, URL, UUID, regex, timestamps, cron next-runs and status codes.</td></tr><tr><th scope="row">PixelTools</th><td>Every output file checked for real format, dimensions, transparency handling, compression targets and metadata removal; crop, rotate and social presets exact.</td></tr><tr><th scope="row">Site features</th><td>Theme toggle and memory, keyboard navigation and focus, skip links, mobile menus, contact form drafts.</td></tr><tr><th scope="row">SEO / AI files</th><td>robots.txt, sitemaps, llms.txt and Markdown copies all valid; FAQ structured data matches the visible text; Lighthouse SEO, Accessibility and Best Practices 100 on every page.</td></tr><tr><th scope="row">Automated tests</th><td>Unit tests 58/58, 108/108 and 47/47; type checks clean on all three sites.</td></tr></tbody></table></div>
+</main>
+<script>
+(() => {
+  let site = 'any', sev = 'any';
+  const issues = [...document.querySelectorAll('.issue')];
+  const headings = [...document.querySelectorAll('[data-site-heading]')];
+  const count = document.getElementById('count');
+  function apply() {
+    let shown = 0;
+    issues.forEach((el) => {
+      const ok = (site === 'any' || el.dataset.site === site) && (sev === 'any' || el.dataset.sev === sev);
+      el.classList.toggle('hidden', !ok);
+      if (ok) shown++;
+    });
+    headings.forEach((h) => {
+      const any = issues.some((el) => el.dataset.site === h.dataset.siteHeading && !el.classList.contains('hidden'));
+      h.classList.toggle('hidden', !any);
+    });
+    count.textContent = shown + (shown === 1 ? ' issue shown' : ' issues shown');
+  }
+  function wire(attr, set) {
+    const btns = document.querySelectorAll('[' + attr + ']');
+    btns.forEach((b) => b.addEventListener('click', () => {
+      btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      set(b.getAttribute(attr));
+      apply();
+    }));
+  }
+  wire('data-filter-site', (v) => (site = v));
+  wire('data-filter-sev', (v) => (sev = v));
+  apply();
+})();
+</script>
+</body>
+</html>

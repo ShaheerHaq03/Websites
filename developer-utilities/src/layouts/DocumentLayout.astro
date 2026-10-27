@@ -1,0 +1,36 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { SitePage } from '../data/pages';
+interface Props {
+  page: SitePage;
+}
+const { page } = Astro.props;
+const heading = page.heading ?? page.name;
+const eyebrow = page.eyebrow ?? 'DATA FORMATTER PRO';
+---
+
+<BaseLayout
+  title={page.seoTitle}
+  description={page.metaDescription}
+  pageType={page.pageType}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: heading, path: page.path },
+  ]}
+>
+  <div class="document-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{heading}</span>
+    </nav>
+    <div class="page-intro">
+      <div class="eyebrow">{eyebrow}</div>
+      <h1>{heading}</h1>
+      {page.intro && <p>{page.intro}</p>}
+    </div>
+    <div class="document-content">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

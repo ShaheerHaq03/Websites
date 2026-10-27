@@ -1053,6 +1053,12 @@ summary:focus-visible {
 .faq-list details[open] summary::after {
   content: '−';
 }
+/* Question headings inside a summary keep the summary's own type styles. */
+.faq-list summary h3 {
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
 .faq-list p {
   font-size: 12px;
   line-height: 1.9;
@@ -1170,6 +1176,11 @@ summary:focus-visible {
   font-size: 13px;
   margin-top: 11px;
   max-width: 720px;
+}
+.calculator-page-header .page-updated {
+  font-size: 11px;
+  margin-top: 6px;
+  color: var(--muted);
 }
 .calculator-card {
   display: grid;

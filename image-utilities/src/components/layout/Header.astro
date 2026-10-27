@@ -1,0 +1,241 @@
+---
+import Logo from '../ui/Logo.astro';
+import Icon from '../ui/Icon.astro';
+import { tools } from '../../data/tools';
+const pathname = Astro.url.pathname.replace(/\.html$/, '');
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <Logo />
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a
+        href="/tools"
+        aria-current={pathname.startsWith('/tools') ? 'page' : undefined}
+      >
+        All tools <span aria-hidden="true">⌄</span>
+      </a>
+      <a
+        href="/about"
+        aria-current={pathname === '/about' ? 'page' : undefined}
+      >
+        About
+      </a>
+    </nav>
+    <div class="header-actions">
+      <button
+        type="button"
+        class="nav-search"
+        data-open-search
+        aria-label="Search image tools"
+      >
+        <svg
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          aria-hidden="true"
+        >
+          <circle cx="10.5" cy="10.5" r="6.5" />
+          <path d="m16 16 4 4" />
+        </svg>
+        <span>Search tools…</span>
+        <kbd>⌘ K</kbd>
+      </button>
+      <button
+        type="button"
+        class="icon-button theme-toggle"
+        data-theme-toggle
+        aria-label="Switch to dark theme"
+      >
+        <svg
+          class="moon-icon"
+          width="19"
+          height="19"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          aria-hidden="true"
+        >
+          <path d="M20.5 13A9 9 0 0 1 11 3.5 9 9 0 1 0 20.5 13Z" />
+        </svg>
+        <svg
+          class="sun-icon"
+          width="19"
+          height="19"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="icon-button mobile-menu-button"
+        data-mobile-menu
+        aria-expanded="false"
+        aria-controls="mobile-navigation"
+        aria-label="Toggle navigation"
+      >
+        <svg
+          width="21"
+          height="21"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <nav
+    id="mobile-navigation"
+    class="mobile-nav"
+    aria-label="Mobile navigation"
+    hidden
+  >
+    <a href="/tools">All tools</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+  </nav>
+</header>
+<dialog id="tool-search" aria-labelledby="search-heading">
+  <div class="search-modal-top">
+    <p id="search-heading" class="search-title">
+      Find your image tool
+    </p>
+    <form method="dialog">
+      <button class="icon-button" aria-label="Close search">
+        ×
+      </button>
+    </form>
+  </div>
+  <label class="sr-only" for="global-search">
+    Search all tools
+  </label>
+  <input
+    id="global-search"
+    type="search"
+    placeholder="Search by name, task, or category…"
+    autocomplete="off"
+  />
+  <p id="global-count" class="sr-only" role="status"></p>
+  <div class="global-search-results">
+    {tools.map((tool) => (
+      <a
+        href={`/tools/${tool.id}`}
+        data-global-result
+        data-text={`${tool.name} ${tool.description} ${tool.category}`.toLowerCase()}
+      >
+        <span class={`tool-icon ${tool.color}`} aria-hidden="true">
+          <Icon name={tool.icon} size={19} />
+        </span>
+        <span>
+          <strong>{tool.name}</strong>
+          <small>{tool.category}</small>
+        </span>
+        <span aria-hidden="true">↗</span>
+      </a>
+    ))}
+    <p class="empty-state" id="global-empty" hidden>
+      No matching tools. Try another search.
+    </p>
+  </div>
+  <div class="search-modal-bottom">
+    <span>10 tools. A little more room to create.</span>
+    <kbd>esc to close</kbd>
+  </div>
+</dialog>
+<script>
+  const root = document.documentElement;
+  const themeButton = document.querySelector<HTMLButtonElement>(
+    '[data-theme-toggle]',
+  )!;
+  const syncThemeLabel = () =>
+    themeButton.setAttribute(
+      'aria-label',
+      `Switch to ${root.dataset.theme === 'dark' ? 'light' : 'dark'} theme`,
+    );
+  syncThemeLabel();
+  themeButton.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    try {
+      localStorage.setItem(root.dataset.themeKey!, root.dataset.theme);
+    } catch {
+      /* Storage can be unavailable in private environments. */
+    }
+    syncThemeLabel();
+  });
+  const media = matchMedia('(prefers-color-scheme: dark)');
+  media.addEventListener('change', () => {
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem(root.dataset.themeKey!);
+    } catch {
+      /* Theme still works in memory. */
+    }
+    if (!saved) {
+      root.dataset.theme = 'light';
+      syncThemeLabel();
+    }
+  });
+  const menuButton =
+    document.querySelector<HTMLButtonElement>('[data-mobile-menu]')!;
+  const menu = document.querySelector<HTMLElement>('#mobile-navigation')!;
+  menuButton.addEventListener('click', () => {
+    menu.hidden = !menu.hidden;
+    menuButton.setAttribute('aria-expanded', String(!menu.hidden));
+  });
+  const dialog = document.querySelector<HTMLDialogElement>('#tool-search')!;
+  const input = document.querySelector<HTMLInputElement>('#global-search')!;
+  const showSearch = () => {
+    dialog.showModal();
+    input.focus();
+  };
+  document
+    .querySelector('[data-open-search]')!
+    .addEventListener('click', showSearch);
+  document.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+      event.preventDefault();
+      if (dialog.open) dialog.close();
+      else showSearch();
+    }
+  });
+  input.addEventListener('input', () => {
+    let count = 0;
+    for (const link of dialog.querySelectorAll<HTMLElement>(
+      '[data-global-result]',
+    )) {
+      link.hidden = !link.dataset.text!.includes(
+        input.value.trim().toLowerCase(),
+      );
+      if (!link.hidden) count++;
+    }
+    document.querySelector<HTMLElement>('#global-empty')!.hidden = count > 0;
+    document.querySelector('#global-count')!.textContent =
+      `${count} matching tools`;
+  });
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) {
+      const box = dialog.getBoundingClientRect();
+      if (
+        event.clientX < box.left ||
+        event.clientX > box.right ||
+        event.clientY < box.top ||
+        event.clientY > box.bottom
+      )
+        dialog.close();
+    }
+  });
+</script>

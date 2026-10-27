@@ -1,0 +1,87 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { pages } from '../data/pages';
+import { site } from '../config/site';
+---
+
+<DocumentLayout page={pages.contact}>
+  <p>
+    If something looks wrong, include the tool name, expected result, actual
+    result, and browser version. Replace private information with a minimal
+    demonstration before sharing.
+  </p>
+  {site.contactEmail ? (
+    <p>
+      Email: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+    </p>
+  ) : (
+    <p class="contact-note">
+      A public support address has not been added to this preview. You can save
+      a feedback draft below. Nothing is submitted or sent by this form.
+    </p>
+  )}
+  <form class="contact-form" id="feedback-form" data-email={site.contactEmail}>
+    <label class="field">
+      Topic
+      <select name="topic">
+        <option>Bug report</option>
+        <option>Tool suggestion</option>
+        <option>Privacy question</option>
+        <option>General feedback</option>
+      </select>
+    </label>
+    <label class="field">
+      Your message
+      <textarea
+        name="message"
+        required
+        minlength="10"
+        maxlength="10000"
+        placeholder="Tool name, steps to reproduce, and what you expected…"
+      ></textarea>
+    </label>
+    <p class="contact-note">
+      Do not include access tokens, passwords, personal data, or proprietary
+      payloads.
+    </p>
+    <div class="toolbar">
+      <button class="btn btn-primary" type="submit">
+        {site.contactEmail ? 'Open email draft →' : 'Save feedback draft ↓'}
+      </button>
+      <button class="btn" type="reset">
+        Clear
+      </button>
+    </div>
+    <p id="feedback-status" role="status" class="contact-note"></p>
+  </form>
+</DocumentLayout>
+<script>
+  const form = document.querySelector<HTMLFormElement>('#feedback-form')!;
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+    const data = new FormData(form);
+    const topic = String(data.get('topic'));
+    const message = String(data.get('message'));
+    if (form.dataset.email) {
+      window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(topic)}&body=${encodeURIComponent(message)}`;
+      document.querySelector('#feedback-status')!.textContent =
+        'An email draft was opened. Review and send it in your email application.';
+    } else {
+      const blob = new Blob([`${topic}\n\n${message}\n`], {
+        type: 'text/plain;charset=utf-8',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'data-formatter-feedback.txt';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      document.querySelector('#feedback-status')!.textContent =
+        'Draft saved to your device. No message was sent.';
+    }
+  });
+  form.addEventListener('reset', () => {
+    document.querySelector('#feedback-status')!.textContent = '';
+  });
+</script>

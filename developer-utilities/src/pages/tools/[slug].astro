@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolApp from '../../components/tools/ToolApp';
+import ToolCard from '../../components/ui/ToolCard.astro';
+import AdSlot from '../../components/ui/AdSlot.astro';
+import { tools, getTool } from '../../data/tools';
+import { content } from '../../content/tools';
+import { site, canonical, formatDate } from '../../config/site';
+import { ids, ref } from '../../lib/seo/schema';
+import { toolMarkdownPath } from '../../lib/seo/markdown';
+export function getStaticPaths() {
+  return tools.map((tool) => ({ params: { slug: tool.id }, props: { tool } }));
+}
+const { tool } = Astro.props;
+const guide = content[tool.id];
+const path = `/tools/${tool.id}`;
+const url = canonical(path);
+// FAQPage mirrors the visible FAQ section below, word for word.
+const schema = [
+  {
+    '@type': 'WebApplication',
+    '@id': `${url}#app`,
+    name: tool.name,
+    url,
+    description: tool.description,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any modern browser',
+    browserRequirements: 'Requires JavaScript',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    publisher: ref(ids.organization()),
+    mainEntityOfPage: ref(ids.webpage(path)),
+  },
+  {
+    '@type': 'FAQPage',
+    '@id': `${url}#faq`,
+    url,
+    name: `${tool.name} FAQ`,
+    isPartOf: ref(ids.webpage(path)),
+    inLanguage: 'en',
+    mainEntity: guide.faqs.map(([question, answer]) => ({
+      '@type': 'Question',
+      name: question,
+      acceptedAnswer: { '@type': 'Answer', text: answer },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={tool.seo}
+  description={tool.metaDescription}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'All tools', path: '/tools' },
+    { name: tool.name, path },
+  ]}
+  webPageExtra={{ mainEntity: ref(`${url}#app`) }}
+  schema={schema}
+  markdownPath={toolMarkdownPath(tool.id)}
+>
+  <div class="container tool-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/tools">Tools</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{tool.name}</span>
+    </nav>
+    <div class="tool-page-heading">
+      <div class={`tool-icon ${tool.color}`} aria-hidden="true">
+        {tool.icon}
+      </div>
+      <div>
+        <div class="eyebrow">{tool.category}</div>
+        <h1>{tool.name}</h1>
+        <p>{tool.description}</p>
+      </div>
+      <span class="privacy-pill">
+        <span></span> Runs locally
+      </span>
+    </div>
+    <ToolApp id={tool.id} client:only="react">
+      <div slot="fallback" class="tool-loading" role="status">
+        <span class="loading-dot"></span>Preparing your local workspace…
+      </div>
+    </ToolApp>
+    <noscript>
+      <p class="warning-panel">
+        Enable JavaScript to run this tool locally in your browser. The usage
+        guide below works without JavaScript.
+      </p>
+    </noscript>
+    <div class="tool-bottom-note">
+      <span aria-hidden="true">◇</span> Free to use. No account required. Core
+      operations never upload your input. <span aria-hidden="true">·</span>{' '}
+      <span>
+        Last updated{' '}
+        <time datetime={site.updated}>{formatDate(site.updated)}</time>
+      </span>
+    </div>
+    <section class="tool-guide" id="guide">
+      <div class="guide-primary">
+        <div class="eyebrow">THE DETAILS, WITHOUT THE GUESSWORK.</div>
+        <h2>{guide.question}</h2>
+        <p class="direct-answer">{guide.answer}</p>
+        <p>{guide.intro}</p>
+        <h3>How do I use {guide.subject}?</h3>
+        <ol>
+          {guide.steps.map((step) => (
+            <li>{step}</li>
+          ))}
+        </ol>
+        <h3>Example input & output</h3>
+        <div class="example-grid">
+          <div>
+            <span>INPUT</span>
+            <pre>{guide.example[0]}</pre>
+          </div>
+          <div>
+            <span>OUTPUT</span>
+            <pre>{guide.example[1]}</pre>
+          </div>
+        </div>
+        <h3>What can I use {guide.subject} for?</h3>
+        <ul>
+          {guide.uses.map((use) => (
+            <li>{use}</li>
+          ))}
+        </ul>
+        <h3>What are the limitations of {guide.subject}?</h3>
+        <p>{guide.limitation}</p>
+        <h3>Troubleshooting</h3>
+        <p>{guide.troubleshooting}</p>
+      </div>
+      <aside class="guide-sidebar">
+        <h2>In this workspace</h2>
+        <a href="#main">↑ Back to the tool</a>
+        <a href="#faq">Frequently asked questions</a>
+        <a href="#related">Related tools</a>
+        <div class="sidebar-note">
+          <span aria-hidden="true">◇</span>
+          <strong>Private by default</strong>
+          <p>
+            Your input stays in this tab. Read our{' '}
+            <a href="/privacy-policy">privacy policy</a> for details about
+            ordinary website requests and future optional services.
+          </p>
+        </div>
+      </aside>
+    </section>
+    <section class="faq-section" id="faq">
+      <div>
+        <span class="eyebrow">GOOD QUESTIONS.</span>
+        <h2>Frequently asked questions</h2>
+      </div>
+      <div>
+        {guide.faqs.map(([question, answer]) => (
+          <div class="faq-item">
+            <h3>{question}</h3>
+            <p>{answer}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+    <AdSlot />
+    <section class="related-section" id="related">
+      <div class="section-heading">
+        <div>
+          <h2>Keep your workflow moving</h2>
+          <p>A few other tools you might need.</p>
+        </div>
+        <a href="/tools" class="text-link">
+          All tools →
+        </a>
+      </div>
+      <div class="tools-grid related-grid">
+        {tool.related.map((id) => (
+          <ToolCard tool={getTool(id)} />
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

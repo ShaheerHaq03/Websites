@@ -1,0 +1,68 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { pages } from '../data/pages';
+---
+
+<DocumentLayout
+  title="Small tools. A bigger picture."
+  description="PixelTools helps images fit into your life, with fewer steps and clearer choices."
+  eyebrow="ABOUT PIXELTOOLS"
+  metaTitle={pages.about.metaTitle}
+  metaDescription={pages.about.metaDescription}
+  pageType="AboutPage"
+>
+  <p>
+    An application form needs a smaller photo. A website needs lighter images. A
+    profile picture needs a different shape. These are ordinary tasks, and they
+    should feel ordinary to finish.
+  </p>
+  <p>
+    PixelTools brings ten focused image utilities into a simple browser
+    workspace. Pick an image, choose the settings, inspect the real result, and
+    download it. No account, conversion service, or subscription is required.
+  </p>
+  <div class="about-values">
+    <div>
+      <h2>Private by design</h2>
+      <p>
+        Core processing happens on your device. Selected image bytes, filenames,
+        and metadata are not sent to a server.
+      </p>
+    </div>
+    <div>
+      <h2>Clear about the result</h2>
+      <p>
+        A target is a goal. A format is a real encoding. A size comparison uses
+        the actual generated file.
+      </p>
+    </div>
+    <div>
+      <h2>Room to get it right</h2>
+      <p>
+        Keep the original, compare the preview, and read the limitations before
+        sharing the next version.
+      </p>
+    </div>
+    <div>
+      <h2>A little context</h2>
+      <p>
+        Each tool explains its controls, tradeoffs, examples, and supported
+        formats. Useful tools should help you understand the output.
+      </p>
+    </div>
+  </div>
+  <h2>Built for everyday images</h2>
+  <p>
+    The toolkit is for students, creators, professionals, designers, and anyone
+    who needs a quick image adjustment. It supports static JPG, PNG, and WebP
+    within clearly stated device-friendly limits.
+  </p>
+  <p>
+    Browser-based processing is not perfect security. Use a device and browser
+    you trust, manage your downloaded files, and review metadata and visible
+    image content before publishing.
+  </p>
+  <a class="btn primary" href="/tools">
+    Find your image tool →
+  </a>
+</DocumentLayout>

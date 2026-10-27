@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolDirectory from '../../components/ui/ToolDirectory.astro';
+import { tools } from '../../data/tools';
+import { breadcrumbList, itemList } from '../../lib/seo/schema';
+const schema = [
+  itemList(
+    '/tools',
+    'All PixelTools image tools',
+    tools.map((tool) => ({ name: tool.name, path: `/tools/${tool.id}` })),
+  ),
+  breadcrumbList('/tools', [
+    { name: 'Home', path: '/' },
+    { name: 'Image tools', path: '/tools' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="All 10 Free Image Tools"
+  description="Find a private browser-based image tool for resizing, compression, cropping, conversion, social canvases, or EXIF inspection."
+  pageType="CollectionPage"
+  pageName="All image tools"
+  schema={schema}
+>
+  <div class="container directory-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Image tools</span>
+    </nav>
+    <div class="page-intro">
+      <span class="eyebrow">YOUR NEXT VERSION STARTS HERE.</span>
+      <h1>A little tool for every image.</h1>
+      <p>Find what you need. Make it just right. Get back to creating.</p>
+    </div>
+    <h2 class="sr-only">Browse all {tools.length} image tools</h2>
+    <ToolDirectory />
+  </div>
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { pages } from '../data/pages';
+---
+
+<DocumentLayout page={pages.privacy}>
+  <h2>Tool input stays in the browser</h2>
+  <p>
+    Core formatting, comparison, conversion, inspection, and generation
+    operations run in your browser. The application does not send editor text,
+    local file contents, token values, clipboard contents, or generated output
+    to an application server. Input is not placed in the page URL, logged to the
+    production console, or saved in a payload history.
+  </p>
+  <p>
+    Local file controls read files you select into the current tab. Download
+    controls create files on your device. Copy controls write the selected
+    result to your system clipboard only when you request it. Browser
+    extensions, shared devices, and clipboard history operate outside this
+    site’s control.
+  </p>
+  <h2>Ordinary website requests</h2>
+  <p>
+    Loading a website still makes ordinary network requests for pages, scripts,
+    styles, and fonts. Hosting providers may process connection information such
+    as IP address, requested path, browser headers, and access timestamps for
+    delivery, security, and operational logs. Core transformations do not attach
+    your tool input to those requests.
+  </p>
+  <h2>Preferences and storage</h2>
+  <p>
+    The theme preference is stored in this browser’s local storage under a
+    site-specific preference key. You can remove it through browser site-data
+    settings. Tool payloads are kept in tab memory while you use the tool;
+    reloading or leaving the page clears this application state. Your browser
+    may independently retain form or clipboard history.
+  </p>
+  <h2>Analytics and advertising</h2>
+  <p>
+    The default version has analytics and advertising disabled and makes no
+    requests to analytics or advertising providers. If the operator enables such
+    services later, this policy must be updated to identify the providers,
+    purposes, data, retention practices, and applicable user choices.
+    Third-party scripts may receive ordinary browsing information. Editor input
+    and token values must never be attached to analytics events.
+  </p>
+  <p>
+    Where required, advertising must be integrated with an appropriate consent
+    management platform before third-party ad requests begin. A generic cookie
+    notice alone does not establish legal compliance. Consent and privacy
+    requirements depend on the services used and visitors’ jurisdictions.
+  </p>
+  <h2>Links and communication</h2>
+  <p>
+    Documentation links lead to third-party sites governed by their own privacy
+    policies. URL inspection never fetches or navigates to the pasted
+    destination. If you use an email contact link, the message is handled by
+    your email provider and the recipient’s email service. The local
+    feedback-draft form does not submit a message to this website.
+  </p>
+  <h2>Your choices</h2>
+  <p>
+    Use demonstration or sanitized data, avoid production secrets, clear the
+    editors when finished, and remove downloaded files or clipboard history if
+    necessary. For privacy questions, consult the{' '}
+    <a href="/contact">contact page</a>. Operator contact details and
+    jurisdiction-specific rights should be reviewed before a public launch.
+  </p>
+</DocumentLayout>

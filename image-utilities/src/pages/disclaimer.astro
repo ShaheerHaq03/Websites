@@ -1,0 +1,54 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { pages } from '../data/pages';
+---
+
+<DocumentLayout
+  title="Disclaimer"
+  description="Understand the practical limits behind the previews and pixels."
+  eyebrow="UPDATED OCTOBER 27, 2026"
+  metaTitle={pages.disclaimer.metaTitle}
+  metaDescription={pages.disclaimer.metaDescription}
+>
+  <h2>Review the actual result</h2>
+  <p>
+    Image utilities support everyday editing, not a guarantee of photographic
+    fidelity, confidentiality, or acceptance by a third-party platform. Check
+    the generated file’s appearance, dimensions, size, format, and available
+    metadata before publishing it.
+  </p>
+  <h2>Quality and format differences</h2>
+  <p>
+    Browser decoding and encoding can change color rendering, metadata, file
+    size, and pixel representation. JPEG has no transparency. Canvas WebP
+    quality is not a true lossless-mode guarantee. PNG cannot recreate detail
+    lost in an earlier lossy image. Enlarging an image does not reconstruct
+    original detail.
+  </p>
+  <h2>Targets and presets</h2>
+  <p>
+    A requested file size is an optimization goal and may not be achievable with
+    the permitted settings. The interface reports actual bytes and target
+    failure. Social image recommendations can change; presets distinguish linked
+    verified recommendations from general starting canvases. Confirm safe areas,
+    account-specific rules, and actual placement behavior separately.
+  </p>
+  <h2>Privacy is broader than metadata</h2>
+  <p>
+    Local processing avoids sending image input as part of the core operation.
+    It does not protect against compromised devices, browser extensions,
+    clipboard history, screenshots, or identifying content visible in an image.
+    Canvas re-encoding does not prove anonymity.
+  </p>
+  <h2>Independent utility</h2>
+  <p>
+    PixelTools is not affiliated with the social platforms, browser projects, or
+    hosting services referenced in its documentation. AdSense preparation is not
+    site approval. Performance targets are only measured scores where a report
+    explicitly says so.
+  </p>
+  <p>
+    See the <a href="/terms">Terms of Use</a> and each tool’s guide for its
+    supported behavior.
+  </p>
+</DocumentLayout>

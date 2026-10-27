@@ -18,35 +18,56 @@ interface Props {
   calculator: CalculatorInfo;
 }
 const { calculator: c } = Astro.props;
+const canonical = `${site.url}/calculators/${c.slug}`;
+const markdownPath = `/calculators/${c.slug}.md`;
+const updatedLabel = new Date(`${site.updated}T00:00:00Z`).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+const breadcrumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculators', path: '/calculators' },
+  { name: c.title, path: `/calculators/${c.slug}` },
+];
 const schema = [
   {
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: site.url },
-      { '@type': 'ListItem', position: 2, name: 'Calculators', item: `${site.url}/calculators` },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: c.title,
-        item: `${site.url}/calculators/${c.slug}`,
-      },
-    ],
-  },
-  {
     '@type': 'WebApplication',
+    '@id': `${canonical}#app`,
     name: c.title,
-    url: `${site.url}/calculators/${c.slug}`,
+    url: canonical,
     description: c.description,
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'Any',
     isAccessibleForFree: true,
     browserRequirements: 'Requires JavaScript for calculations',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    publisher: { '@id': `${site.url}/#organization` },
+    mainEntityOfPage: { '@id': `${canonical}#webpage` },
+  },
+  // Mirrors the visible "questions, answered" section word for word.
+  {
+    '@type': 'FAQPage',
+    '@id': `${canonical}#faq`,
+    isPartOf: { '@id': `${canonical}#webpage` },
+    mainEntity: c.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
   },
 ];
 ---
 
-<BaseLayout title={`${c.title} — Free Online Tool`} description={c.description} schema={schema}>
+<BaseLayout
+  title={c.seoTitle}
+  description={c.description}
+  schema={schema}
+  breadcrumbs={breadcrumbs}
+  mainEntity={`${canonical}#app`}
+  markdownPath={markdownPath}
+>
   <div class="container calculator-page">
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <a href="/">Home</a>
@@ -63,6 +84,9 @@ const schema = [
         <span class="eyebrow">{c.category} · FREE STUDENT TOOL</span>
         <h1>{c.title}</h1>
         <p>{c.description}</p>
+        <p class="page-updated">
+          Last updated <time datetime={site.updated}>{updatedLabel}</time>
+        </p>
       </div>
     </header>
     <Calculator id={c.id} slug={c.slug} client:load />
@@ -75,7 +99,7 @@ const schema = [
     <div class="content-layout">
       <aside class="content-nav" aria-label="On this page">
         <strong>IN THIS GUIDE</strong>
-        <a href="#overview">The bigger picture</a>
+        <a href="#overview">What it is</a>
         <a href="#how-to">How to use it</a>
         <a href="#formula">The formula</a>
         <a href="#example">Worked example</a>
@@ -86,21 +110,26 @@ const schema = [
       <article class="calculator-content">
         <section id="overview">
           <span class="eyebrow">A LITTLE CONTEXT</span>
-          <h2>The bigger picture</h2>
+          <h2>What is the {c.title}?</h2>
+          <p>{c.answer}</p>
           <p>{c.intro}</p>
         </section>
         <section id="how-to">
-          <h2>How to use the {c.title.toLowerCase()}</h2>
+          <h2>How do I use the {c.title}?</h2>
           <ol>
             {c.steps.map((step) => (
               <li>{step}</li>
             ))}
           </ol>
         </section>
-        <FormulaExplanation formula={c.formula} explanation={c.explanation} />
+        <FormulaExplanation
+          formula={c.formula}
+          explanation={c.explanation}
+          heading={c.formulaQuestion}
+        />
         <ExamplePanel example={c.example} />
         <section id="mistakes">
-          <h2>Common mistakes to avoid</h2>
+          <h2>What mistakes should I avoid?</h2>
           <ul>
             {c.mistakes.map((m) => (
               <li>{m}</li>
@@ -108,7 +137,7 @@ const schema = [
           </ul>
         </section>
         <section id="limitations">
-          <h2>Before you decide</h2>
+          <h2>How reliable is this result?</h2>
           <p>{c.limitation}</p>
           <p>
             Use this estimate alongside your syllabus and official records. See our{' '}
@@ -116,11 +145,13 @@ const schema = [
           </p>
         </section>
         <section id="questions">
-          <h2>Your questions, answered</h2>
+          <h2>{c.title}: your questions, answered</h2>
           <div class="faq-list">
             {c.faqs.map((f) => (
               <details>
-                <summary>{f.q}</summary>
+                <summary>
+                  <h3>{f.q}</h3>
+                </summary>
                 <p>{f.a}</p>
               </details>
             ))}

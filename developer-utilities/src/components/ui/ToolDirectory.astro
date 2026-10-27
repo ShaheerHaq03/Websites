@@ -1,0 +1,93 @@
+---
+import { tools, categories } from '../../data/tools';
+import ToolCard from './ToolCard.astro';
+---
+
+<div class="tool-directory" data-directory>
+  <div class="directory-controls">
+    <div class="filter-tabs" aria-label="Tool categories">
+      {categories.map((category, index) => (
+        <button
+          type="button"
+          data-category-filter={category}
+          aria-pressed={index === 0}
+          class:list={{ active: index === 0 }}
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+    <label class="directory-search">
+      <span class="sr-only">Search tools</span>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+      >
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="m16 16 4 4" />
+      </svg>
+      <input
+        type="search"
+        data-directory-search
+        placeholder="Find your tool…"
+      />
+    </label>
+  </div>
+  <p class="sr-only" data-result-count role="status">
+    12 tools available
+  </p>
+  <div class="tools-grid">
+    {tools.map((tool, index) => (
+      <ToolCard tool={tool} index={index} />
+    ))}
+  </div>
+  <p class="empty-state" data-empty hidden>
+    No tools match this search. Try “JSON”, “encoding”, or “time”.
+  </p>
+</div>
+<script>
+  for (const directory of document.querySelectorAll<HTMLElement>(
+    '[data-directory]',
+  )) {
+    const search = directory.querySelector<HTMLInputElement>(
+      '[data-directory-search]',
+    )!;
+    let category = 'All tools';
+    const filter = () => {
+      let count = 0;
+      for (const card of directory.querySelectorAll<HTMLElement>(
+        '[data-tool-card]',
+      )) {
+        const visible =
+          (category === 'All tools' || card.dataset.category === category) &&
+          card.dataset.search!.includes(search.value.trim().toLowerCase());
+        card.hidden = !visible;
+        if (visible) count++;
+      }
+      directory.querySelector<HTMLElement>('[data-empty]')!.hidden =
+        count !== 0;
+      directory.querySelector<HTMLElement>('[data-result-count]')!.textContent =
+        `${count} tools available`;
+    };
+    search.addEventListener('input', filter);
+    for (const button of directory.querySelectorAll<HTMLButtonElement>(
+      '[data-category-filter]',
+    ))
+      button.addEventListener('click', () => {
+        category = button.dataset.categoryFilter!;
+        for (const item of directory.querySelectorAll(
+          '[data-category-filter]',
+        )) {
+          const active = item === button;
+          item.classList.toggle('active', active);
+          item.setAttribute('aria-pressed', String(active));
+        }
+        filter();
+      });
+  }
+</script>

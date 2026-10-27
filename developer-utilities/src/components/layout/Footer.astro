@@ -1,0 +1,48 @@
+---
+import Logo from '../ui/Logo.astro';
+---
+
+<footer class="site-footer">
+  <div class="container footer-main">
+    <div class="footer-brand">
+      <Logo />
+      <p>
+        Small tools. Smoother workflows.
+        <br />
+        Built for the things developers do every day.
+      </p>
+      <span class="privacy-pill">
+        <span></span> Your data stays in your browser
+      </span>
+    </div>
+    <div class="footer-col">
+      <h2>Data tools</h2>
+      <a href="/tools/json-formatter">JSON Formatter</a>
+      <a href="/tools/json-diff">JSON Diff Checker</a>
+      <a href="/tools/json-to-csv">JSON to CSV</a>
+      <a href="/tools/csv-to-json">CSV to JSON</a>
+    </div>
+    <div class="footer-col">
+      <h2>More utilities</h2>
+      <a href="/tools/jwt-decoder">JWT Decoder</a>
+      <a href="/tools/regex-tester">Regex Tester</a>
+      <a href="/tools/uuid-generator">UUID Generator</a>
+      <a href="/tools">
+        Explore all 12 tools <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <div class="footer-col">
+      <h2>The details</h2>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy-policy">Privacy Policy</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="/disclaimer">Disclaimer</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {new Date().getFullYear()} Data Formatter Pro</span>
+    <span>Made for developers. Open to everyone.</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>

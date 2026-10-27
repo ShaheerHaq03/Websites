@@ -1,0 +1,291 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HomeEntry from '../components/tools/HomeEntry';
+import ToolDirectory from '../components/ui/ToolDirectory.astro';
+import Icon from '../components/ui/Icon.astro';
+import FaqList from '../components/ui/FaqList.astro';
+import { site } from '../config/site';
+import { guides } from '../content/guides';
+import { tools } from '../data/tools';
+import { itemList, faqPage } from '../lib/seo/schema';
+const faq = [
+  [
+    'Are my images sent to a server?',
+    'No. Core transformations happen in your browser. The default site has no analytics or advertising scripts; normal page and asset requests still happen when you visit.',
+  ],
+  [
+    'Can I compress an image to exactly 50 KB?',
+    'The compressor aims for at most 50,000 bytes using the settings you permit. It reports the actual bytes and clearly tells you when the target is not reached.',
+  ],
+  [
+    'Which image formats can I use?',
+    'Static JPG, PNG, and WebP are supported. Format-specific converters explain their accepted inputs. SVG, GIF, HEIC, AVIF, and animated files are not supported.',
+  ],
+  [
+    'Is there an image-size limit?',
+    'Yes. Each file can be up to 20 MB, with a maximum of 16 megapixels and 8,192 pixels per side. The main-thread fallback has a 4-megapixel limit. Batches are limited to 10 images and 60 MB total.',
+  ],
+] as const;
+const schema = [
+  itemList(
+    '/',
+    'PixelTools image tools',
+    tools.map((tool) => ({ name: tool.name, path: `/tools/${tool.id}` })),
+  ),
+  faqPage('/', faq),
+];
+---
+
+<BaseLayout
+  title="Free Image Tools — Resize, Compress & Convert"
+  description={site.description}
+  pageName={`${site.name} — free, private image tools`}
+  schema={schema}
+>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-copy">
+        <span class="eyebrow hero-eyebrow">
+          <span class="live-dot"></span> A SMALL TOOLKIT FOR YOUR BIG IDEAS
+        </span>
+        <h1>
+          Every image.
+          <br />
+          <span>Just the right size.</span>
+        </h1>
+        <p>
+          Resize, compress, crop, and convert. Make your images work
+          <br class="desktop-break" /> for you—right in your browser, with
+          nothing sent to a server.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#all-tools">
+            Explore image tools <span aria-hidden="true">→</span>
+          </a>
+          <a class="btn" href="/tools/image-compressor">
+            Compress an image <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+      <div class="hero-workspace">
+        <div class="hero-art art-left">
+          <img
+            src="/images/landscape.webp"
+            width="240"
+            height="160"
+            alt="Original mountain landscape illustration"
+          />
+          <div class="art-label">
+            <span class="mini-dot"></span> A LITTLE MORE POSSIBLE.
+          </div>
+        </div>
+        <div class="hero-entry-wrap">
+          <HomeEntry client:load />
+          <noscript>
+            <p class="notice">
+              Enable JavaScript for local image processing, or explore the tool
+              guides below.
+            </p>
+          </noscript>
+        </div>
+        <div class="hero-art art-right">
+          <div class="crop-corners">
+            <img
+              src="/images/landscape.webp"
+              width="170"
+              height="210"
+              alt="A portrait crop of the mountain illustration"
+            />
+          </div>
+          <span class="dimension-badge">YOUR NEXT VERSION ↗</span>
+        </div>
+      </div>
+      <div class="hero-trust">
+        <span>✓ Always free</span>
+        <span>✓ No account needed</span>
+        <span>✓ Images stay local</span>
+        <span>✓ JPG, PNG & WebP</span>
+      </div>
+    </div>
+  </section>
+  <section class="section container" id="all-tools">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">LESS FRICTION. MORE CREATING.</span>
+        <h2>One toolkit. A better-looking result.</h2>
+        <p>Ten focused tools for the things your images need.</p>
+      </div>
+      <a href="/tools" class="text-link">
+        All image tools <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <ToolDirectory />
+  </section>
+  <section class="format-section">
+    <div class="container format-grid">
+      <div>
+        <span class="eyebrow">SAME IMAGE. NEW POSSIBILITIES.</span>
+        <h2>
+          The right format
+          <br />
+          makes a difference.
+        </h2>
+        <p>
+          Keep the detail you need. Leave the extra weight behind. Choose a
+          format that fits where your image is going.
+        </p>
+      </div>
+      <div class="format-shortcuts">
+        <a href="/tools/png-to-jpg">
+          <span class="format-file amber">PNG</span>
+          <span class="format-arrow" aria-hidden="true">
+            →
+          </span>
+          <span class="format-file blue">JPG</span>
+          <span>
+            <strong>Made for sharing</strong>
+            <small>Flatten transparent areas to a color you choose.</small>
+          </span>
+          <b aria-hidden="true">↗</b>
+        </a>
+        <a href="/tools/image-to-webp">
+          <span class="format-file blue">JPG</span>
+          <span class="format-arrow" aria-hidden="true">
+            →
+          </span>
+          <span class="format-file green">WebP</span>
+          <span>
+            <strong>Made for the web</strong>
+            <small>Adjust lossy quality and compare actual file sizes.</small>
+          </span>
+          <b aria-hidden="true">↗</b>
+        </a>
+        <a href="/tools/webp-to-png">
+          <span class="format-file green">WebP</span>
+          <span class="format-arrow" aria-hidden="true">
+            →
+          </span>
+          <span class="format-file violet">PNG</span>
+          <span>
+            <strong>Ready for your workflow</strong>
+            <small>Convert static images and preserve alpha.</small>
+          </span>
+          <b aria-hidden="true">↗</b>
+        </a>
+      </div>
+    </div>
+  </section>
+  <section class="section container how-section">
+    <div class="section-heading center">
+      <span class="eyebrow">NO LEARNING CURVE REQUIRED.</span>
+      <h2>From “almost” to just right.</h2>
+      <p>A few simple steps. A real result you can download.</p>
+    </div>
+    <div class="how-grid">
+      <article>
+        <span>01</span>
+        <h3>Choose your image</h3>
+        <p>
+          Pick a file or drop it in. The original stays untouched on your
+          device.
+        </p>
+      </article>
+      <article>
+        <span>02</span>
+        <h3>Make a little adjustment</h3>
+        <p>
+          Set your dimensions, quality, format, or crop. Every option says what
+          it does.
+        </p>
+      </article>
+      <article>
+        <span>03</span>
+        <h3>See it. Save it. Share it.</h3>
+        <p>
+          Review real dimensions and file sizes, then download your new version.
+        </p>
+      </article>
+    </div>
+  </section>
+  <section class="container privacy-banner">
+    <div class="privacy-symbol">
+      <Icon name="shield" size={50} />
+    </div>
+    <div>
+      <span class="eyebrow">PRIVATE BY DESIGN.</span>
+      <h2>Your pictures. Your business.</h2>
+      <p>
+        Family photos, work files, or your next creative project—core processing
+        happens on your device. No conversion servers. No saved image history.
+      </p>
+      <a href="/privacy-policy" class="text-link">
+        A clearer picture of privacy <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    <div class="privacy-facts">
+      <span>
+        <b>0</b> image uploads to a server
+      </span>
+      <span>
+        <b>10</b> tools, free to use
+      </span>
+    </div>
+  </section>
+  <section class="section container">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">A FEW THINGS WORTH KNOWING.</span>
+        <h2>Small guides. Clearer choices.</h2>
+        <p>Get to know the pixels behind the picture.</p>
+      </div>
+      <a href="/guides" class="text-link">
+        Read the guides ↗
+      </a>
+    </div>
+    <div class="guide-cards">
+      {guides.slice(0, 3).map((guide, index) => (
+        <a href={`/guides/${guide.slug}`}>
+          <div
+            class={`guide-illustration illustration-${index}`}
+            aria-hidden="true"
+          >
+            {index === 0 ? (
+              <>
+                <span>1200 × 800</span>
+                <span>≠</span>
+                <span>100 KB</span>
+              </>
+            ) : index === 1 ? (
+              <>
+                <span>JPG</span>
+                <span>PNG</span>
+                <span>WebP</span>
+              </>
+            ) : (
+              <>
+                <span>◈</span>
+                <span>THE HIDDEN DETAILS</span>
+              </>
+            )}
+          </div>
+          <span class="guide-time">{guide.readTime} MIN READ</span>
+          <h3>{guide.title}</h3>
+          <p>{guide.description}</p>
+          <span class="text-link">A little more clarity →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="container faq-section">
+    <div>
+      <span class="eyebrow">GOOD QUESTIONS.</span>
+      <h2>
+        A few things
+        <br />
+        to know.
+      </h2>
+      <p>Simple tools. Straight answers.</p>
+    </div>
+    <FaqList items={faq} />
+  </section>
+</BaseLayout>
